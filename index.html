@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#7c5cff">
-<title>郭胤麟的单词精灵营地 v17：大图图鉴与稀有率优化</title>
+<title>单词精灵营地 v19：自定义训练师名字</title>
 <style>
   :root{
     --bg1:#fff7ed;--bg2:#eef8ff;--card:rgba(255,255,255,.88);--text:#172033;--muted:#687085;
@@ -88,7 +88,8 @@
       </div>
       <button class="btn primary row" id="startSpellingSide">开始今日练习</button>
       <button class="btn ghost row" id="saveSettings">保存设置</button>
-      <button class="btn good row dex-side-btn" id="sideSpiritDex" data-action="openSpiritDex">🧚 我的精灵图鉴</button>
+      <button class="btn ghost row" id="changePlayerName" type="button">👤 修改训练师名字</button>
+      <button class="btn good row dex-side-btn" id="sideSpiritDex" data-action="openSpiritDexCaptured">🧚 已收服精灵图鉴</button>
       <div class="stats" id="statsBox"></div>
       <p class="tiny">语音拼写规则：看汉语后，每次只读一个英文字母，系统逐格填入后判断。机器听错时可以退一格或点字母修正；点“显示完整单词”会自动变成 Boss/待收服词并统计次数。语音功能需要浏览器允许麦克风。朗读发音已设为“江苏考试训练模式”：优先使用 en-US 标准美式英语声音；如果设备没有美式声音，会自动退回可用英语声音。</p>
       <div class="footer-actions"><button class="btn ghost" id="exportProgress">导出进度</button><button class="btn warn" id="resetProgress">清空进度</button></div>
@@ -100,7 +101,7 @@
   </div>
 </div>
 <div class="confetti" id="confetti"></div>
-<button class="floating-dex-btn" id="floatingSpiritDexBtn" data-action="openSpiritDex" type="button">🧚 图鉴</button>
+<button class="floating-dex-btn" id="floatingSpiritDexBtn" data-action="openSpiritDexCaptured" type="button" aria-label="打开已收服精灵图鉴">🧚 已收服</button>
 <div class="spirit-lightbox" id="spiritLightbox" aria-hidden="true">
   <div class="spirit-lightbox-card">
     <button class="lightbox-close" data-action="closeSpiritImage" type="button">×</button>
@@ -117,11 +118,11 @@
   "use strict";
   const WORDS = JSON.parse(document.getElementById("wordData").textContent);
   const SPRITES = JSON.parse(document.getElementById("spriteData").textContent);
-  const VERSION = "v17-1013-spirit-dex-large-image-rarity-fix-2026-07-06";
+  const VERSION = "v19-1013-spirit-custom-name-2026-07-06";
   const STORAGE_KEY = "adhd_word_app_state_" + VERSION;
   const SESSION_STORAGE_KEY = STORAGE_KEY + "_active_session";
-  const LEGACY_SESSION_KEYS = ["adhd_word_app_state_v16-1013-spirit-dex-15s-2026-07-06_active_session","adhd_word_app_state_v15-1013-spirit-collection-2026-07-06_active_session","adhd_word_app_state_v14-1013-gamified-habit-map-2026-07-06_active_session","adhd_word_app_state_v13-1013-exam-american-voice-memory-2026-07-06_active_session","adhd_word_app_state_v12-1013-progress-memory-2026-07-06_active_session","adhd_word_app_state_v11-1013-grade-filter-big-praise-10s-2026-07-06_active_session"];
-  const LEGACY_KEYS = ["adhd_word_app_state_v16-1013-spirit-dex-15s-2026-07-06","adhd_word_app_state_v15-1013-spirit-collection-2026-07-06","adhd_word_app_state_v14-1013-gamified-habit-map-2026-07-06","adhd_word_app_state_v13-1013-exam-american-voice-memory-2026-07-06","adhd_word_app_state_v12-1013-progress-memory-2026-07-06","adhd_word_app_state_v11-1013-grade-filter-big-praise-10s-2026-07-06","adhd_word_app_state_v9-1013-words-letter-by-letter-voice-spelling-2026-07-06","adhd_word_app_state_v8-letter-by-letter-voice-spelling-2026-07-06","adhd_word_app_state_v5-selectable-spelling-2026-07-06","adhd_word_app_state_v4-leakproof-spelling-2026-07-06","adhd_word_app_state_v3-spelling-voice-2026-07-05","adhd_word_app_state_v2-spelling-priority-2026-07-05","adhd_word_app_state_v1-729-2026-07-05"];
+  const LEGACY_SESSION_KEYS = ["adhd_word_app_state_v18-1013-spirit-dex-captured-rarity-fix-2026-07-06_active_session","adhd_word_app_state_v16-1013-spirit-dex-15s-2026-07-06_active_session","adhd_word_app_state_v15-1013-spirit-collection-2026-07-06_active_session","adhd_word_app_state_v14-1013-gamified-habit-map-2026-07-06_active_session","adhd_word_app_state_v13-1013-exam-american-voice-memory-2026-07-06_active_session","adhd_word_app_state_v12-1013-progress-memory-2026-07-06_active_session","adhd_word_app_state_v11-1013-grade-filter-big-praise-10s-2026-07-06_active_session"];
+  const LEGACY_KEYS = ["adhd_word_app_state_v18-1013-spirit-dex-captured-rarity-fix-2026-07-06","adhd_word_app_state_v16-1013-spirit-dex-15s-2026-07-06","adhd_word_app_state_v15-1013-spirit-collection-2026-07-06","adhd_word_app_state_v14-1013-gamified-habit-map-2026-07-06","adhd_word_app_state_v13-1013-exam-american-voice-memory-2026-07-06","adhd_word_app_state_v12-1013-progress-memory-2026-07-06","adhd_word_app_state_v11-1013-grade-filter-big-praise-10s-2026-07-06","adhd_word_app_state_v9-1013-words-letter-by-letter-voice-spelling-2026-07-06","adhd_word_app_state_v8-letter-by-letter-voice-spelling-2026-07-06","adhd_word_app_state_v5-selectable-spelling-2026-07-06","adhd_word_app_state_v4-leakproof-spelling-2026-07-06","adhd_word_app_state_v3-spelling-voice-2026-07-05","adhd_word_app_state_v2-spelling-priority-2026-07-05","adhd_word_app_state_v1-729-2026-07-05"];
   const $ = (id)=>document.getElementById(id);
   const els = {
     root:$("appRoot"), gradeSelect:$("gradeSelect"), groupSelect:$("groupSelect"), unitSelect:$("unitSelect"), newCount:$("newCount"), sessionSize:$("sessionSize"),
@@ -131,7 +132,7 @@
     studyCard:$("studyCard"), cardContent:$("cardContent"), barFill:$("barFill"), progressText:$("progressText"), summaryCard:$("summaryCard"), todaySummary:$("todaySummary"), reviewList:$("reviewList"), confetti:$("confetti"), spiritLightbox:$("spiritLightbox"), spiritLightboxImg:$("spiritLightboxImg"), spiritLightboxTitle:$("spiritLightboxTitle"), spiritLightboxMeta:$("spiritLightboxMeta"), spiritLightboxDesc:$("spiritLightboxDesc")
   };
   const clone = (obj)=>JSON.parse(JSON.stringify(obj));
-  const defaultState = {settings:{grade:"全部",group:"全部",unit:"全部",dailyNew:8,sessionSize:12,mode:"zhSpell",autoSpeak:true,allowReveal:true,quietMode:false,useCustomWords:false,selectedWordIds:[]},progress:{},history:{},lastRunDate:null,totalStars:0,badges:{}};
+  const defaultState = {profile:{playerName:"",named:false},settings:{grade:"全部",group:"全部",unit:"全部",dailyNew:8,sessionSize:12,mode:"zhSpell",autoSpeak:true,allowReveal:true,quietMode:false,useCustomWords:false,selectedWordIds:[]},progress:{},history:{},lastRunDate:null,totalStars:0,badges:{}};
   let state = loadState();
   let session = blankSession();
 
@@ -142,7 +143,7 @@
       const raw=localStorage.getItem(STORAGE_KEY) || LEGACY_KEYS.map(k=>localStorage.getItem(k)).find(Boolean);
       if(!raw)return clone(defaultState);
       const data=JSON.parse(raw);
-      const merged={...clone(defaultState),...data,settings:{...defaultState.settings,...(data.settings||{}),mode:(data.settings&&data.settings.mode)||"zhSpell"},progress:data.progress||{},history:data.history||{},badges:data.badges||{},totalStars:data.totalStars||0};
+      const merged={...clone(defaultState),...data,profile:{...defaultState.profile,...(data.profile||{})},settings:{...defaultState.settings,...(data.settings||{}),mode:(data.settings&&data.settings.mode)||"zhSpell"},progress:data.progress||{},history:data.history||{},badges:data.badges||{},totalStars:data.totalStars||0};
       if(!Array.isArray(merged.settings.selectedWordIds))merged.settings.selectedWordIds=[];
       merged.settings.selectedWordIds=merged.settings.selectedWordIds.map(String);
       merged.settings.useCustomWords=!!merged.settings.useCustomWords;
@@ -188,6 +189,61 @@
   function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
   function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
   function escapeAttr(s){return escapeHtml(s);}
+  function playerName(){
+    const n=String((state.profile&&state.profile.playerName)||"").trim();
+    return n || "小训练师";
+  }
+  function hasPlayerName(){return !!(state.profile&&state.profile.named&&String(state.profile.playerName||"").trim());}
+  function normalizePlayerName(v){return String(v||"").replace(/[<>]/g,"").replace(/\s+/g," ").trim().slice(0,12);}
+  function personalize(text){return String(text||"").replace(/郭胤麟/g,playerName());}
+  function applyPlayerNameText(root=document.body){
+    try{
+      const name=playerName();
+      document.title=`${name}的单词精灵营地`;
+      const walk=(node)=>{
+        if(!node)return;
+        if(node.nodeType===3){
+          if(node.nodeValue&&node.nodeValue.includes("郭胤麟"))node.nodeValue=node.nodeValue.replace(/郭胤麟/g,name);
+          return;
+        }
+        if(node.nodeType!==1)return;
+        ["aria-label","title","alt","placeholder"].forEach(attr=>{const v=node.getAttribute&&node.getAttribute(attr);if(v&&v.includes("郭胤麟"))node.setAttribute(attr,v.replace(/郭胤麟/g,name));});
+        Array.from(node.childNodes||[]).forEach(walk);
+      };
+      walk(root);
+    }catch(e){}
+  }
+  function setupPlayerNameObserver(){
+    try{
+      const mo=new MutationObserver(list=>{
+        for(const m of list){
+          if(m.type==="childList")m.addedNodes.forEach(n=>applyPlayerNameText(n));
+          else if(m.type==="characterData")applyPlayerNameText(m.target);
+        }
+      });
+      mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+      applyPlayerNameText(document.body);
+    }catch(e){}
+  }
+  function renderNameSetup(change=false){
+    clearPraiseOverlay();updateProgressBar();
+    const current=hasPlayerName()?playerName():"";
+    els.cardContent.innerHTML=`<div class="center-screen"><div class="name-setup-card"><div class="badge-row" style="justify-content:center"><span class="badge purple">单词精灵训练师登记</span><span class="badge green">名字只保存在本设备</span></div><div class="start-title">${change?'修改训练师名字':'先给训练师取个名字'}</div><p class="start-sub">以后夸奖、精灵营地、捕捉报告、家长夸奖卡都会按这个名字称呼。这样别人也能使用同一个网页。</p><input id="playerNameInput" type="text" maxlength="12" value="${escapeAttr(current)}" placeholder="请输入名字，比如：小明 / Alice"><div class="name-examples"><span class="name-chip">建议 2～8 个字</span><span class="name-chip">可用中文/英文</span><span class="name-chip">随时可修改</span></div><div class="selector-actions"><button class="btn primary start-btn" id="savePlayerNameBtn">进入我的精灵营地</button></div><p class="tiny">隐私说明：名字只保存在当前浏览器本地，不会上传到服务器；换设备后需要重新设置。</p><div class="feedback" id="feedback"></div></div></div>`;
+    const input=$("playerNameInput"); const btn=$("savePlayerNameBtn");
+    if(input){setTimeout(()=>input.focus(),80);input.addEventListener("keydown",e=>{if(e.key==="Enter")savePlayerNameFromInput();});}
+    if(btn)btn.addEventListener("click",savePlayerNameFromInput);
+    applyPlayerNameText();
+  }
+  function savePlayerNameFromInput(){
+    const input=$("playerNameInput");
+    const name=normalizePlayerName(input?input.value:"");
+    if(!name){showFeedback("先输入一个名字，精灵营地以后就这样称呼你。","warn");return;}
+    state.profile={...(state.profile||{}),playerName:name,named:true,updatedAt:new Date().toISOString()};
+    saveState();applyPlayerNameText();
+    const restored=restoreActiveSession();
+    if(!restored)renderStart();
+    updateStats();
+  }
   function gradeRank(g){return {"三年级":3,"四年级":4,"五年级":5,"六年级":6}[String(g||"").trim()]||99;}
   function groupRank(g){const m=String(g||"").match(/[一二三四五六七八九十]+/);const map={一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9,十:10};return m?[...m[0]].reduce((n,ch)=>n+(map[ch]||0),0):99;}
   function unitRank(u){const m=String(u||"").match(/\d+/);return m?Number(m[0]):99;}
@@ -308,19 +364,21 @@
   function rollSpiritRarity(task,progress){
     const boss=((progress.spellWrong||0)+(progress.noSpell||0)+(progress.reveals||0)+(progress.missingWrong||0)+(task&&task.wasWrong?1:0))>0;
     const streak=computeStreak();
-    // v17：稀有率重新压低。普通精灵应当是主力，高级精灵要真正有惊喜感。
+    // v18：进一步压低高级精灵概率。普通精灵是主力；高级精灵只作为“惊喜”，不是日常掉落。
     let table;
-    if(boss)table=[['common',82],['rare',15],['epic',2.7],['legendary',.29],['mythic',.01]];
-    else if(task&&task.fullReveal)table=[['common',96],['rare',3.8],['epic',.2],['legendary',0],['mythic',0]];
-    else if(task&&task.hintLevel>0)table=[['common',93],['rare',6.3],['epic',.65],['legendary',.05],['mythic',0]];
-    else table=[['common',91],['rare',8],['epic',.9],['legendary',.1],['mythic',0]];
-    if(streak>=7)table=table.map(([r,w])=>[r,r==='common'?Math.max(86,w-2.5):w+(r==='rare'?1.5:r==='epic'?.7:r==='legendary'?.25:r==='mythic'?.05:0)]);
-    else if(streak>=3)table=table.map(([r,w])=>[r,r==='common'?Math.max(88,w-1):w+(r==='rare'?.7:r==='epic'?.25:r==='legendary'?.05:0)]);
+    if(boss)table=[['common',88],['rare',10],['epic',1.75],['legendary',.24],['mythic',.01]];
+    else if(task&&task.fullReveal)table=[['common',98],['rare',1.9],['epic',.1],['legendary',0],['mythic',0]];
+    else if(task&&task.hintLevel>0)table=[['common',96],['rare',3.55],['epic',.42],['legendary',.03],['mythic',0]];
+    else table=[['common',95],['rare',4.45],['epic',.5],['legendary',.05],['mythic',0]];
+    // 连续学习只略微提升稀有感，不再明显抬高高级精灵概率，避免“高级泛滥”。
+    if(streak>=7)table=table.map(([r,w])=>[r,r==='common'?Math.max(92,w-.8):w+(r==='rare'?.55:r==='epic'?.2:r==='legendary'?.04:0)]);
+    else if(streak>=3)table=table.map(([r,w])=>[r,r==='common'?Math.max(93,w-.35):w+(r==='rare'?.25:r==='epic'?.09:r==='legendary'?.01:0)]);
     let picked=weightedPick(table.map(([v,w])=>({v,w})));
     const total=ensureSpiritState().totalCaptures||Object.keys(ensureSpiritState().captured||{}).length;
-    // 早期保护：前期不要太快出神话/传说，避免高级精灵泛滥。
-    if(picked==='mythic' && total<120)picked='legendary';
-    if(picked==='legendary' && total<40)picked=Math.random()<.7?'rare':'epic';
+    // 早期保护：前期尽量不要出现神话/传说；史诗也会适当降级。
+    if(picked==='mythic' && total<300)picked='legendary';
+    if(picked==='legendary' && total<120)picked=Math.random()<.85?'rare':'epic';
+    if(picked==='epic' && total<25 && !boss)picked=Math.random()<.75?'common':'rare';
     return picked;
   }
   function spiritPool(rarity){return SPRITES.filter(s=>s.rarity===rarity);}
@@ -343,12 +401,12 @@
     els.spiritLightboxImg.src=s.img; els.spiritLightboxImg.alt=s.cnName||'精灵大图';
     els.spiritLightboxTitle.textContent=`${ri.icon} ${s.cnName} ${s.enName?(' · '+s.enName):''}`;
     els.spiritLightboxMeta.innerHTML=`<span class="rarity-pill ${ri.cls}">${ri.icon}${ri.label}</span> · ${caps.length?`已收服 ${caps.length} 只 · 最高 Lv.${maxLevel}`:'未发现 · 继续挑战有机会收服'}`;
-    els.spiritLightboxDesc.textContent=(s.desc||'这是一只等待郭胤麟收服的单词精灵。')+(wordList?`｜关联单词：${wordList}`:'');
+    els.spiritLightboxDesc.textContent=(s.desc||'这是一只等待训练师收服的单词精灵。')+(wordList?`｜关联单词：${wordList}`:'');
     els.spiritLightbox.classList.add('show'); els.spiritLightbox.setAttribute('aria-hidden','false');
   }
   function closeSpiritImage(){if(!els.spiritLightbox)return;els.spiritLightbox.classList.remove('show');els.spiritLightbox.setAttribute('aria-hidden','true');}
-  function renderSpiritDex(showAll=true){updateProgressBar();const st=spiritStats();const capturedSet=new Set(Object.keys(st.inventory));const sorted=SPRITES.slice().sort((a,b)=>rarityInfo(b.rarity).weight-rarityInfo(a.rarity).weight||a.id.localeCompare(b.id));const list=showAll?sorted:sorted.filter(s=>capturedSet.has(s.id));els.cardContent.innerHTML=`<div class="spirit-dex"><div class="badge-row"><span class="badge purple">郭胤麟的精灵营地</span><span class="badge green">已收服 ${st.capturedWords} 个单词</span><span class="badge orange">发现 ${st.species}/${SPRITES.length} 种精灵</span><span class="badge">今日新收服 ${st.todayNew}</span></div><div class="spirit-dex-title">我的单词精灵图鉴</div><p class="start-sub" style="text-align:left;margin-left:0">每拼会一个单词，就可能收服一只精灵；同一个单词反复拼对，不会重复拿图，而是让对应精灵升级。Boss 词被打败时，稀有概率会略微提高，但高级精灵已经重新调低为真正的惊喜。点击任意精灵卡片可以查看大图。</p><p class="rarity-note">当前稀有率：普通词以普通精灵为主；Boss 词主要仍是普通/稀有，史诗很少，传说和神话极少。</p>${renderSpiritCampStrip()}<div class="spirit-dex-actions"><button class="btn primary" data-action="startMode" data-set-mode="zhSpell">继续捕捉精灵</button><button class="btn ghost" data-action="openSpiritDexCaptured">只看已收服</button><button class="btn ghost" data-action="openSpiritDexAll">查看全部图鉴</button><button class="btn ghost" data-action="selectorBack">返回首页</button></div>${!list.length?'<div class="dex-empty">还没有收服精灵。可以点“查看全部图鉴”先看看所有精灵；完成一次语音拼英文或防漏字挑战，就会出现第一只精灵。</div>':''}<div class="spirit-dex-grid">${list.map(s=>{const caps=capturedWordsForSprite(s.id);const locked=!caps.length;const ri=rarityInfo(s.rarity);const maxLevel=caps.reduce((m,c)=>Math.max(m,c.level||1),0);const words=caps.slice(0,5).map(c=>`<span class="word-chip">${escapeHtml(c.word||'')}</span>`).join('');return `<div class="spirit-card ${locked?'locked':''}" data-action="openSpiritImage" data-sprite-id="${escapeAttr(s.id)}" role="button" tabindex="0"><img src="${s.img}" alt="${escapeAttr(s.cnName)}">${locked?'<span class="lock-mark">未发现</span>':''}<h4>${escapeHtml(s.cnName)} <small>${escapeHtml(s.enName)}</small></h4><span class="rarity-pill ${ri.cls}">${ri.icon}${ri.label}</span><p>${locked?'还没有遇见。坚持挑战，Boss 词会略微提高稀有概率，但高级精灵非常少见。':`数量 ${caps.length} · 最高 Lv.${maxLevel}<br>${words || '已收服'}`}</p><p>${escapeHtml((s.desc||'').slice(0,70))}${(s.desc||'').length>70?'…':''}</p><span class="tap-hint">点击查看大图</span></div>`}).join('')}</div></div>`;}
-  function renderSpiritReportBlock(){const events=(session.spiritEvents&&session.spiritEvents.length?session.spiritEvents:(ensureSpiritState().log||[]).filter(e=>(e.at||'').slice(0,10)===todayStr()).slice(-8));if(!events.length)return '';const unique=events.slice(-6).reverse();return `<div class="spirit-report"><h3>🧚 今日捕捉报告</h3><p class="tiny">郭胤麟今天的努力已经变成看得见的精灵。不是空学，是一只一只收进自己的图鉴。</p><div class="spirit-report-list">${unique.map(ev=>{const s=spriteById(ev.spriteId);const ri=rarityInfo(ev.rarity||s.rarity);const word=ev.word||'';return `<div class="spirit-report-item" data-action="openSpiritImage" data-sprite-id="${escapeAttr(s.id)}"><img src="${s.img}" alt="${escapeAttr(s.cnName)}"><div><b>${ri.icon}${escapeHtml(s.cnName)} · Lv.${ev.level||1}</b><small>${escapeHtml(word)} · ${ri.label} · ${ev.type==='new'?'新收服':ev.type==='upgrade'?'升级':'训练'}</small></div></div>`}).join('')}</div><div class="selector-actions" style="margin-top:12px"><button class="btn ghost" data-action="openSpiritDex">打开我的精灵图鉴</button></div></div>`;}
+  function renderSpiritDex(showAll=true){updateProgressBar();const st=spiritStats();const capturedSet=new Set(Object.keys(st.inventory));const sorted=SPRITES.slice().sort((a,b)=>rarityInfo(b.rarity).weight-rarityInfo(a.rarity).weight||a.id.localeCompare(b.id));const list=showAll?sorted:sorted.filter(s=>capturedSet.has(s.id));els.cardContent.innerHTML=`<div class="spirit-dex"><div class="badge-row"><span class="badge purple">郭胤麟的精灵营地</span><span class="badge green">已收服 ${st.capturedWords} 个单词</span><span class="badge orange">发现 ${st.species}/${SPRITES.length} 种精灵</span><span class="badge">今日新收服 ${st.todayNew}</span></div><div class="spirit-dex-title">我的单词精灵图鉴</div><p class="start-sub" style="text-align:left;margin-left:0">每拼会一个单词，就可能收服一只精灵；同一个单词反复拼对，不会重复拿图，而是让对应精灵升级。Boss 词被打败时，稀有概率会略微提高，但高级精灵已经再次压低概率，真正作为长期学习中的惊喜。点击任意精灵卡片可以查看大图。</p><p class="rarity-note">当前稀有率：普通精灵是主力；稀有偶尔出现；史诗很少；传说极少；神话需要长期坚持才可能遇到。</p>${renderSpiritCampStrip()}<div class="spirit-dex-actions"><button class="btn primary" data-action="startMode" data-set-mode="zhSpell">继续捕捉精灵</button><button class="btn ghost" data-action="openSpiritDexCaptured">只看已收服</button><button class="btn ghost" data-action="openSpiritDexAll">查看全部图鉴</button><button class="btn ghost" data-action="selectorBack">返回首页</button></div>${!list.length?'<div class="dex-empty">还没有收服精灵。完成一次语音拼英文或防漏字挑战，就会出现第一只精灵。<br><br><button class="btn primary" data-action="openSpiritDexAll">先看看全部精灵图鉴</button></div>':''}<div class="spirit-dex-grid">${list.map(s=>{const caps=capturedWordsForSprite(s.id);const locked=!caps.length;const ri=rarityInfo(s.rarity);const maxLevel=caps.reduce((m,c)=>Math.max(m,c.level||1),0);const words=caps.slice(0,5).map(c=>`<span class="word-chip">${escapeHtml(c.word||'')}</span>`).join('');return `<div class="spirit-card ${locked?'locked':''}" data-action="openSpiritImage" data-sprite-id="${escapeAttr(s.id)}" role="button" tabindex="0"><img src="${s.img}" alt="${escapeAttr(s.cnName)}">${locked?'<span class="lock-mark">未发现</span>':''}<h4>${escapeHtml(s.cnName)} <small>${escapeHtml(s.enName)}</small></h4><span class="rarity-pill ${ri.cls}">${ri.icon}${ri.label}</span><p>${locked?'还没有遇见。坚持挑战，Boss 词会略微提高稀有概率，但高级精灵非常少见。':`数量 ${caps.length} · 最高 Lv.${maxLevel}<br>${words || '已收服'}`}</p><p>${escapeHtml((s.desc||'').slice(0,70))}${(s.desc||'').length>70?'…':''}</p><span class="tap-hint">点击查看大图</span></div>`}).join('')}</div></div>`;}
+  function renderSpiritReportBlock(){const events=(session.spiritEvents&&session.spiritEvents.length?session.spiritEvents:(ensureSpiritState().log||[]).filter(e=>(e.at||'').slice(0,10)===todayStr()).slice(-8));if(!events.length)return '';const unique=events.slice(-6).reverse();return `<div class="spirit-report"><h3>🧚 今日捕捉报告</h3><p class="tiny">郭胤麟今天的努力已经变成看得见的精灵。不是空学，是一只一只收进自己的图鉴。</p><div class="spirit-report-list">${unique.map(ev=>{const s=spriteById(ev.spriteId);const ri=rarityInfo(ev.rarity||s.rarity);const word=ev.word||'';return `<div class="spirit-report-item" data-action="openSpiritImage" data-sprite-id="${escapeAttr(s.id)}"><img src="${s.img}" alt="${escapeAttr(s.cnName)}"><div><b>${ri.icon}${escapeHtml(s.cnName)} · Lv.${ev.level||1}</b><small>${escapeHtml(word)} · ${ri.label} · ${ev.type==='new'?'新收服':ev.type==='upgrade'?'升级':'训练'}</small></div></div>`}).join('')}</div><div class="selector-actions" style="margin-top:12px"><button class="btn ghost" data-action="openSpiritDexCaptured">打开已收服图鉴</button></div></div>`;}
 
   function populateSelects(){
     const grades=["全部",...uniq(WORDS.map(w=>w.grade).filter(Boolean)).sort((a,b)=>gradeRank(a)-gradeRank(b))];
@@ -682,7 +740,7 @@
   }
   let praiseAdvanceTimer=null;
   function clearPraiseOverlay(){document.querySelectorAll(".praise-pop").forEach(n=>n.remove());if(praiseAdvanceTimer){clearTimeout(praiseAdvanceTimer);praiseAdvanceTimer=null;}}
-  function showPraiseOverlay(text,big=false){if(state.settings.quietMode||!els.studyCard||!text)return null;clearPraiseOverlay();const div=document.createElement("div");div.className="praise-pop"+(big?" big":"");div.setAttribute("role","button");div.setAttribute("aria-label","点击继续下一个单词");const nextTip="点一下继续下一个，或等 15 秒自动继续 ✨";const spiritHtml=renderSpiritEventCard(session.lastSpiritEvent);div.innerHTML=`<div class="emoji">${big?"🏆🎉⭐":"🌟✨"}</div><b>${escapeHtml(text)}</b>${spiritHtml}<div class="tap-next">${nextTip}</div>`;div.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(window.__praiseContinue)window.__praiseContinue();});els.studyCard.appendChild(div);return div;}
+  function showPraiseOverlay(text,big=false){text=personalize(text);if(state.settings.quietMode||!els.studyCard||!text)return null;clearPraiseOverlay();const div=document.createElement("div");div.className="praise-pop"+(big?" big":"");div.setAttribute("role","button");div.setAttribute("aria-label","点击继续下一个单词");const nextTip="点一下继续下一个，或等 15 秒自动继续 ✨";const spiritHtml=renderSpiritEventCard(session.lastSpiritEvent);div.innerHTML=`<div class="emoji">${big?"🏆🎉⭐":"🌟✨"}</div><b>${escapeHtml(text)}</b>${spiritHtml}<div class="tap-next">${nextTip}</div>`;div.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(window.__praiseContinue)window.__praiseContinue();});els.studyCard.appendChild(div);return div;}
   function scheduleNextAfterPraise(big=false){session.pendingAdvance=true;saveSessionSnapshot();let moved=false;const go=()=>{if(moved)return;moved=true;session.pendingAdvance=false;window.__praiseContinue=null;clearPraiseOverlay();nextTask();};window.__praiseContinue=go;praiseAdvanceTimer=setTimeout(go,15000);}
   function praiseAfterSpelling(t){const line=praiseLine(t);const milestone=maybeTenWordPraise();const text=milestone||line;showFeedback(text,"good");showPraiseOverlay(text,!!milestone);return !!milestone;}
   function recordVoiceSpellWrong(word,t,heard){const p=getProgress(word.id);p.voiceSpellWrong=(p.voiceSpellWrong||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.wrong=(p.wrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);t.voiceSpellWrongCount=(t.voiceSpellWrongCount||0)+1;recordHistory(false,word.id,"zhSpell",0,t);saveState();updateStats();}
@@ -770,7 +828,7 @@
   function skipWord(){if(session.locked||!session.current)return;session.locked=true;const {word,mode}=session.current;if(mode==="speakCheck")handleVoiceWrong(word,session.current,true);else handleWrong(word,mode,true);session.done++;updateProgressBar();showFeedback("没关系，这个词等会儿再来一次。","warn");session.pendingAdvance=true;saveSessionSnapshot();setTimeout(()=>{session.pendingAdvance=false;nextTask();},700);}
   function showHint(){const t=session.current;if(!t||!["spell","zhSpell"].includes(t.mode))return;t.hintLevel=Math.min(2,(t.hintLevel||0)+1);session.hintIds.add(t.word.id);const p=getProgress(t.word.id);p.hints=(p.hints||0)+1;state.progress[t.word.id]=p;saveState();updateHint();showFeedback(t.hintLevel===1?"给你首字母提示。":"再给你首尾字母提示。","warn");}
   function slowSpeak(){if(!session.current)return;const word=session.current.word;if(!("speechSynthesis" in window)){showFeedback("这台设备暂时不支持网页朗读。","bad");return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(speakTextFor(word));applyExamVoice(u);u.rate=.48;u.pitch=1.03;window.speechSynthesis.speak(u);}
-  function showFeedback(text,type){const fb=$("feedback");if(!fb)return;fb.textContent=text;fb.className="feedback "+(type||"");}
+  function showFeedback(text,type){const fb=$("feedback");if(!fb)return;fb.textContent=personalize(text);fb.className="feedback "+(type||"");}
   function randomGood(){return praiseGeneric();}
   function updateProgressBar(){const target=Math.max(1,Number(state.settings.sessionSize)||session.startedQueueLength||1);const pct=Math.min(100,Math.round((session.done/target)*100));els.barFill.style.width=pct+"%";els.progressText.textContent=`${Math.min(session.done,target)}/${target}`;}
 
@@ -792,7 +850,7 @@
   function chestRewardText(){const count=session.spellIds?.size||0;if(count>=10)return `🎁 大宝箱开启：你获得“十词通关徽章”、${session.stars||0} 颗星星，还有一次家长认真夸奖。`;if(count>=5)return `🧰 小宝箱开启：你完成了 ${count} 个拼写词，单词精灵队伍又扩大了。`;return `🌱 今天的任务完成了，习惯火苗继续亮着。`;}
 
   function renderDone(allDone=false){session.active=false;session.pendingAdvance=false;clearSessionSnapshot();updateProgressBar();const attempts=session.correct+session.wrong;const accuracy=attempts?Math.round(session.correct/attempts*100):100;const practiced=session.practicedIds.size;const spelling=session.spellIds.size;const voice=session.voiceIds?session.voiceIds.size:0;const hint=session.hintIds.size;const reveal=session.revealedIds.size;let badgeText="";if(session.bestCombo>=5)badgeText+='<span class="badge purple">🔥 连对达人</span>';if(accuracy>=90&&attempts>=8)badgeText+='<span class="badge green">🎯 高正确率</span>';if(session.stars>=25)badgeText+='<span class="badge orange">⭐ 星星收集家</span>';const size=currentMissionSize();els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="badge-row" style="justify-content:center"><span class="badge green">今日地图完成</span><span class="badge orange">本轮 ${session.stars} 星</span><span class="badge purple">正确率 ${accuracy}%</span>${badgeText}</div><div class="start-title">${allDone?"当前范围已通关":"今日单词精灵闯关完成"}</div><p class="start-sub">本轮收服/练习 <b>${practiced}</b> 个词，其中拼写/防漏字 <b>${spelling}</b> 个、朗读检测 <b>${voice}</b> 个；用了提示 ${hint} 个，查看完整答案 ${reveal} 个。看过答案和拼错的词已经变成“Boss/待收服词”，后续会自动回来。</p>${renderQuestMap(size,size)}<div class="chest-card"><b>${chestRewardText()}</b><br>今天不是没完没了地学，而是完成一小段地图，带着“我做到了”的感觉结束。</div>${renderSpiritReportBlock()}<div class="guardian-card"><h3>👨‍👩‍👧 家长夸奖卡</h3><p>今天请家长照着说一句，真实夸具体行为，不只说“真棒”。</p><div class="parent-script">“${parentPraiseForSession()}”</div></div><div class="selector-actions three"><button class="btn primary start-btn" id="moreNewBtn">学习更多的新单词</button><button class="btn good start-btn" id="againBtn">再来一轮拼写</button><button class="btn ghost start-btn" data-set-mode="missed" data-action="startMode">挑战 Boss 词</button></div><div class="quick-grid"><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">继续语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="voice" data-action="startMode">朗读检测</button></div></div></div>`;$('againBtn').addEventListener('click',startSession);$('moreNewBtn').addEventListener('click',startMoreNewWords);renderReviewList();updateStats();maybeConfetti(32);}
-  function renderStart(){updateProgressBar();updateCustomWordsNote();const chosen=selectedWords();const customActive=state.settings.useCustomWords&&customSelectedWords().length>0;const due=countDue(chosen);const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const size=currentMissionSize();const streak=computeStreak();const todayDone=todayDoneCount();const weekWords=weeklyWordCount();const isVoice=state.settings.mode==="voice";const isMissing=state.settings.mode==="missing";const isZh=state.settings.mode==="zhSpell";let intro;if(customActive)intro=`已启用自主选词：本轮只从你勾选的 <b>${chosen.length}</b> 个单词里出题。今天不是“背单词”，是把这些词一个个收服。`;else if(isVoice)intro=`今天是朗读关：出现英文后读出来。读错不惩罚，听考试美式发音后再试。`;else if(isMissing)intro=`今天是防漏字关：专抓漏字、乱序和 b/d/p/q 这类方向难点。每发现一个漏洞，都是升级。`;else if(isZh)intro=`今天是核心关：看汉语，用语音逐字母拼英文。不会就显示答案，再遮住重拼；待收服词会自动回来。`;else intro=`今天会优先安排：待复习 <b>${due}</b> 个、Boss 词 <b>${weak}</b> 个、待收服词 <b>${noSpell}</b> 个。`;els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="streak-row"><span class="streak-pill"><span class="flame">🔥</span>习惯火苗 ${streak} 天</span><span class="streak-pill">🛟 本周复活卡 1 张</span><span class="streak-pill">📅 本周收服 ${weekWords} 词</span></div><div class="badge-row" style="justify-content:center"><span class="badge">${customActive?"自选词":escapeHtml(rangeLabel())}</span><span class="badge green">${chosen.length} 个词</span><span class="badge purple">${modeName(state.settings.mode)}</span><span class="no-spell-badge">Boss/待收服 ${noSpell}</span></div><div class="mission-title">今日任务：收服 ${size} 个单词精灵</div><p class="start-sub">${intro}</p>${renderSpiritCampStrip()}${renderQuestMap(todayDone%Math.max(1,size),size)}<div class="game-banner"><b>玩法：</b>每天只闯一小段地图。拼对一个词，就收服一个单词精灵；拼错不是失败，它会变成 Boss 词，等你下次打败它。完成后就结束，不搞无限刷。</div><button class="btn primary start-btn" id="startMain">🚀 开始今日挑战</button><div class="game-mini"><button class="btn ghost" data-action="startSize" data-size="5">🌱 轻松 5 词<br><span class="soft-note">状态一般也算完成</span></button><button class="btn ghost" data-action="startSize" data-size="10">🎯 正常 10 词<br><span class="soft-note">推荐每日任务</span></button><button class="btn ghost" data-action="startSize" data-size="15">🔥 挑战 15 词<br><span class="soft-note">状态好再冲</span></button></div><div class="quick-grid"><button class="btn ghost" data-action="openSpiritDex">我的精灵图鉴</button><button class="btn ghost" data-action="openSelector">自主选择单词</button><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="missed" data-action="startMode">Boss 词复活</button></div><div class="guardian-card"><h3>🎁 星星奖励目标</h3><p>星星不是为了诱惑孩子无限学，而是把每天 5～10 分钟的努力变成看得见的进度。</p>${rewardGoalsHtml()}</div></div></div>`;$('startMain').addEventListener('click',startSession);}
+  function renderStart(){updateProgressBar();updateCustomWordsNote();const chosen=selectedWords();const customActive=state.settings.useCustomWords&&customSelectedWords().length>0;const due=countDue(chosen);const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const size=currentMissionSize();const streak=computeStreak();const todayDone=todayDoneCount();const weekWords=weeklyWordCount();const isVoice=state.settings.mode==="voice";const isMissing=state.settings.mode==="missing";const isZh=state.settings.mode==="zhSpell";let intro;if(customActive)intro=`已启用自主选词：本轮只从你勾选的 <b>${chosen.length}</b> 个单词里出题。今天不是“背单词”，是把这些词一个个收服。`;else if(isVoice)intro=`今天是朗读关：出现英文后读出来。读错不惩罚，听考试美式发音后再试。`;else if(isMissing)intro=`今天是防漏字关：专抓漏字、乱序和 b/d/p/q 这类方向难点。每发现一个漏洞，都是升级。`;else if(isZh)intro=`今天是核心关：看汉语，用语音逐字母拼英文。不会就显示答案，再遮住重拼；待收服词会自动回来。`;else intro=`今天会优先安排：待复习 <b>${due}</b> 个、Boss 词 <b>${weak}</b> 个、待收服词 <b>${noSpell}</b> 个。`;els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="streak-row"><span class="streak-pill"><span class="flame">🔥</span>习惯火苗 ${streak} 天</span><span class="streak-pill">🛟 本周复活卡 1 张</span><span class="streak-pill">📅 本周收服 ${weekWords} 词</span></div><div class="badge-row" style="justify-content:center"><span class="badge">${customActive?"自选词":escapeHtml(rangeLabel())}</span><span class="badge green">${chosen.length} 个词</span><span class="badge purple">${modeName(state.settings.mode)}</span><span class="no-spell-badge">Boss/待收服 ${noSpell}</span></div><div class="mission-title">今日任务：收服 ${size} 个单词精灵</div><p class="start-sub">${intro}</p>${renderSpiritCampStrip()}${renderQuestMap(todayDone%Math.max(1,size),size)}<div class="game-banner"><b>玩法：</b>每天只闯一小段地图。拼对一个词，就收服一个单词精灵；拼错不是失败，它会变成 Boss 词，等你下次打败它。完成后就结束，不搞无限刷。</div><button class="btn primary start-btn" id="startMain">🚀 开始今日挑战</button><div class="game-mini"><button class="btn ghost" data-action="startSize" data-size="5">🌱 轻松 5 词<br><span class="soft-note">状态一般也算完成</span></button><button class="btn ghost" data-action="startSize" data-size="10">🎯 正常 10 词<br><span class="soft-note">推荐每日任务</span></button><button class="btn ghost" data-action="startSize" data-size="15">🔥 挑战 15 词<br><span class="soft-note">状态好再冲</span></button></div><div class="quick-grid"><button class="btn ghost" data-action="openSpiritDexCaptured">已收服精灵图鉴</button><button class="btn ghost" data-action="openSelector">自主选择单词</button><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="missed" data-action="startMode">Boss 词复活</button></div><div class="guardian-card"><h3>🎁 星星奖励目标</h3><p>星星不是为了诱惑孩子无限学，而是把每天 5～10 分钟的努力变成看得见的进度。</p>${rewardGoalsHtml()}</div></div></div>`;$('startMain').addEventListener('click',startSession);}
   function countDue(words){const today=todayStr();return words.filter(w=>{const p=existingProgress(w.id);return p&&(!p.due||p.due<=today)}).length;}
   function countWeak(words){return words.filter(w=>{const p=existingProgress(w.id);return p&&((p.spellWrong||p.wrong||0)>0 || (p.reveals||0)>0 || (p.noSpell||0)>0 || (p.missingWrong||0)>0 || (p.spellStage||0)<3)}).length;}
   function updateStats(){updateCustomWordsNote();const chosen=selectedWords();const spellingReady=chosen.filter(w=>(existingProgress(w.id)?.spellStage||0)>=5).length;const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const missingWrong=chosen.reduce((sum,w)=>sum+(existingProgress(w.id)?.missingWrong||0),0);const streak=computeStreak();const weekWords=weeklyWordCount();const sp=spiritStats();els.statsBox.innerHTML=`<div class="stat"><b>${chosen.length}</b><small>当前地图词数</small></div><div class="stat"><b>${noSpell}</b><small>Boss/待收服词</small></div><div class="stat"><b>${weak}</b><small>需要加强</small></div><div class="stat"><b>${missingWrong}</b><small>漏字练错次数</small></div><div class="stat"><b>${spellingReady}</b><small>已收服较稳</small></div><div class="stat"><b>${state.totalStars||0}</b><small>星星总数</small></div><div class="stat"><b>${streak}</b><small>习惯火苗天数</small></div><div class="stat"><b>${weekWords}</b><small>本周收服词</small></div><div class="stat"><b>${sp.capturedWords}</b><small>精灵图鉴单词</small></div><div class="stat"><b>${sp.species}</b><small>已发现精灵种类</small></div>`;renderTodaySummary();}
@@ -809,7 +867,7 @@
     els.groupSelect.addEventListener("change",()=>{state.settings.group=els.groupSelect.value;refreshUnitSelect();applySettingsFromUI();renderStart();});
     els.unitSelect.addEventListener("change",()=>{state.settings.unit=els.unitSelect.value;applySettingsFromUI();renderStart();});
     [els.newCount,els.sessionSize,els.autoSpeak,els.allowReveal,els.quietMode].forEach(el=>el.addEventListener("change",()=>{applySettingsFromUI();renderStart();}));
-    els.saveSettings.addEventListener("click",()=>{applySettingsFromUI();showToastOnCard("设置已保存，可以开始今日语音拼写。")});
+    els.saveSettings.addEventListener("click",()=>{applySettingsFromUI();showToastOnCard("设置已保存，可以开始今日语音拼写。")});const nameBtn=$("changePlayerName");if(nameBtn)nameBtn.addEventListener("click",()=>renderNameSetup(true));
     els.startSpellingSide.addEventListener("click",()=>{renderModeTabs();startSession();});
     els.openWordSelector.addEventListener("click",()=>renderWordSelector());
     els.clearCustomWords.addEventListener("click",clearCustomSelection);
@@ -818,10 +876,18 @@
     els.focusModeBtn.addEventListener("click",()=>{document.body.classList.toggle("focus");});
     document.addEventListener("click",e=>{const btn=e.target.closest("[data-action]");if(!btn)return;if(btn.dataset.setMode){state.settings.mode=btn.dataset.setMode;applySettingsFromUI();renderStart();if(btn.dataset.action==="startMode")startSession();return}const action=btn.dataset.action;if(!action)return;if(action==="openSelector")renderWordSelector();if(action==="openSpiritDex")renderSpiritDex(true);if(action==="openSpiritImage")openSpiritImage(btn.dataset.spriteId);if(action==="closeSpiritImage")closeSpiritImage();if(action==="openSpiritDexCaptured")renderSpiritDex(false);if(action==="openSpiritDexAll")renderSpiritDex(true);if(action==="selectorSearchClear")renderWordSelector("");if(action==="selectorSelectVisible")changeVisibleSelection(true);if(action==="selectorClearVisible")changeVisibleSelection(false);if(action==="selectorSelectWeak")selectWeakWords();if(action==="selectorSelectScope"){setCustomSelection(selectorScopeWords().map(w=>w.id),true);renderWordSelector($("selectorSearch")?.value||"");}if(action==="selectorClearAll"){clearCustomSelection();renderWordSelector($("selectorSearch")?.value||"");}if(action==="selectorDisable"){state.settings.useCustomWords=false;saveState();updateCustomWordsNote();renderWordSelector($("selectorSearch")?.value||"");}if(action==="selectorBack")renderStart();if(action==="selectorSaveOnly"){setCustomSelection(currentSelectorIds(),false);showToastOnCard("自选词已保存；需要时可打开选词表启用。") }if(action==="selectorUseStart"){setCustomSelection(currentSelectorIds(),true);state.settings.mode=state.settings.mode||"zhSpell";startSession();}if(action==="speak"&&session.current)speak(session.current.word);if(action==="startVoice")startVoiceCheck();if(action==="startVoiceSpell")startVoiceSpell();if(action==="startVoiceSpellFull")startVoiceSpellFull();if(action==="undoVoiceLetter")undoVoiceLetter();if(action==="clearVoiceLetters")clearVoiceLetters();if(action==="finishVoiceLetters")finishVoiceLetters();if(action==="manualVoiceLetter")manualVoiceLetter(btn.dataset.letter);if(action==="slowSpeak")slowSpeak();if(action==="checkSpell")checkSpelling();if(action==="checkMissing")checkMissing();if(action==="hint")showHint();if(action==="reveal")revealAnswer();if(action==="tryAgain")tryAgain();if(action==="skip")skipWord();if(action==="readDone")readDone();if(action==="speakWord"){const w=byId(btn.dataset.wordId);if(w)speak(w);} });
     document.addEventListener("click",e=>{const choice=e.target.closest(".choice");if(choice)chooseAnswer(choice);});
+    const floatingDex=$("floatingSpiritDexBtn");
+    if(floatingDex){floatingDex.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();renderSpiritDex(false);});}
+    const sideDex=$("sideSpiritDex");
+    if(sideDex){sideDex.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();renderSpiritDex(false);});}
     if(els.spiritLightbox){els.spiritLightbox.addEventListener("click",e=>{if(e.target===els.spiritLightbox)closeSpiritImage();});}
-    document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSpiritImage();});
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape")closeSpiritImage();
+      const card=e.target&&e.target.closest?e.target.closest(".spirit-card[data-sprite-id]"):null;
+      if(card&&(e.key==="Enter"||e.key===" ")){e.preventDefault();openSpiritImage(card.dataset.spriteId);}
+    });
   }
-  function showToastOnCard(text){if(!session.active){els.cardContent.insertAdjacentHTML("afterbegin",`<div class="feedback good" style="margin-bottom:10px">${escapeHtml(text)}</div>`);setTimeout(renderStart,900);} }
+  function showToastOnCard(text){text=personalize(text);if(!session.active){els.cardContent.insertAdjacentHTML("afterbegin",`<div class="feedback good" style="margin-bottom:10px">${escapeHtml(text)}</div>`);setTimeout(renderStart,900);} }
 
 
   /* v11 潜移默化学习信念夸奖：普通夸奖短而暖，大夸奖加入复利/反过来想/能力圈思想 */
@@ -1066,7 +1132,7 @@
 
   document.addEventListener("click",e=>{const btn=e.target.closest('[data-action="startSize"]');if(!btn)return;const size=Math.max(1,Number(btn.dataset.size)||10);state.settings.sessionSize=size;if(els.sessionSize)els.sessionSize.value=size;state.settings.mode=state.settings.mode||"zhSpell";saveState();startSession();});
 
-  function init(){populateSelects();bindEvents();const restored=restoreActiveSession();if(!restored)renderStart();updateStats();window.addEventListener("beforeunload",()=>{saveState();saveSessionSnapshot();});document.addEventListener("visibilitychange",()=>{if(document.hidden){saveState();saveSessionSnapshot();}});saveState();}
+  function init(){populateSelects();bindEvents();setupPlayerNameObserver();if(!hasPlayerName()){renderNameSetup(false);updateStats();saveState();window.addEventListener("beforeunload",()=>{saveState();saveSessionSnapshot();});document.addEventListener("visibilitychange",()=>{if(document.hidden){saveState();saveSessionSnapshot();}});return;}const restored=restoreActiveSession();if(!restored)renderStart();updateStats();window.addEventListener("beforeunload",()=>{saveState();saveSessionSnapshot();});document.addEventListener("visibilitychange",()=>{if(document.hidden){saveState();saveSessionSnapshot();}});saveState();applyPlayerNameText();}
   init();
 })();
 </script>
