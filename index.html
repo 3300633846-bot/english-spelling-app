@@ -69,7 +69,7 @@
       <button class="btn primary row" id="startSpellingSide">开始今日练习</button>
       <button class="btn ghost row" id="saveSettings">保存设置</button>
       <div class="stats" id="statsBox"></div>
-      <p class="tiny">语音拼写规则：看汉语后，每次只读一个英文字母，系统逐格填入后判断。机器听错时可以退一格或点字母修正；点“显示完整单词”会自动记入不会拼列表并统计次数。语音功能需要浏览器允许麦克风。</p>
+      <p class="tiny">语音拼写规则：看汉语后，每次只读一个英文字母，系统逐格填入后判断。机器听错时可以退一格或点字母修正；点“显示完整单词”会自动记入不会拼列表并统计次数。语音功能需要浏览器允许麦克风。朗读发音已设为“江苏考试训练模式”：优先使用 en-US 标准美式英语声音；如果设备没有美式声音，会自动退回可用英语声音。</p>
       <div class="footer-actions"><button class="btn ghost" id="exportProgress">导出进度</button><button class="btn warn" id="resetProgress">清空进度</button></div>
     </aside>
     <main class="main">
@@ -84,11 +84,11 @@
 (()=>{
   "use strict";
   const WORDS = JSON.parse(document.getElementById("wordData").textContent);
-  const VERSION = "v12-1013-progress-memory-2026-07-06";
+  const VERSION = "v13-1013-exam-american-voice-memory-2026-07-06";
   const STORAGE_KEY = "adhd_word_app_state_" + VERSION;
   const SESSION_STORAGE_KEY = STORAGE_KEY + "_active_session";
-  const LEGACY_SESSION_KEYS = ["adhd_word_app_state_v11-1013-grade-filter-big-praise-10s-2026-07-06_active_session"];
-  const LEGACY_KEYS = ["adhd_word_app_state_v11-1013-grade-filter-big-praise-10s-2026-07-06","adhd_word_app_state_v9-1013-words-letter-by-letter-voice-spelling-2026-07-06","adhd_word_app_state_v8-letter-by-letter-voice-spelling-2026-07-06","adhd_word_app_state_v5-selectable-spelling-2026-07-06","adhd_word_app_state_v4-leakproof-spelling-2026-07-06","adhd_word_app_state_v3-spelling-voice-2026-07-05","adhd_word_app_state_v2-spelling-priority-2026-07-05","adhd_word_app_state_v1-729-2026-07-05"];
+  const LEGACY_SESSION_KEYS = ["adhd_word_app_state_v12-1013-progress-memory-2026-07-06_active_session","adhd_word_app_state_v11-1013-grade-filter-big-praise-10s-2026-07-06_active_session"];
+  const LEGACY_KEYS = ["adhd_word_app_state_v12-1013-progress-memory-2026-07-06","adhd_word_app_state_v11-1013-grade-filter-big-praise-10s-2026-07-06","adhd_word_app_state_v9-1013-words-letter-by-letter-voice-spelling-2026-07-06","adhd_word_app_state_v8-letter-by-letter-voice-spelling-2026-07-06","adhd_word_app_state_v5-selectable-spelling-2026-07-06","adhd_word_app_state_v4-leakproof-spelling-2026-07-06","adhd_word_app_state_v3-spelling-voice-2026-07-05","adhd_word_app_state_v2-spelling-priority-2026-07-05","adhd_word_app_state_v1-729-2026-07-05"];
   const $ = (id)=>document.getElementById(id);
   const els = {
     root:$("appRoot"), gradeSelect:$("gradeSelect"), groupSelect:$("groupSelect"), unitSelect:$("unitSelect"), newCount:$("newCount"), sessionSize:$("sessionSize"),
@@ -230,7 +230,36 @@
   function missingLetters(en,positions){const ans=primaryAnswer(en);const pos=new Set(positions||[]);return [...ans].filter((_,i)=>pos.has(i)).join("");}
   function isMissingCorrect(input,word,task){const value=compactEnglish(input);if(!value)return false;const expected=compactEnglish(missingLetters(word.en,task.missingPositions||[]));return value===expected||isSpellingCorrect(input,word.en);}
   function speakTextFor(word){return String(word.en).replace(/=/g,". ").replace(/\//g," or ").replace(/\.\.\./g," ").replace(/\s+/g," ");}
-  function speak(wordOrText){const text=typeof wordOrText==="string"?wordOrText:speakTextFor(wordOrText);if(!("speechSynthesis" in window)){showFeedback("这台设备暂时不支持网页朗读。","bad");return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="en-US";u.rate=.70;u.pitch=1.06;window.speechSynthesis.speak(u);}
+  const EXAM_VOICE_LANG = "en-US";
+  let preferredExamVoice = null;
+  function availableVoices(){try{return (window.speechSynthesis&&window.speechSynthesis.getVoices)?window.speechSynthesis.getVoices():[]}catch(e){return []}}
+  function chooseExamVoice(){
+    if(preferredExamVoice)return preferredExamVoice;
+    const voices=availableVoices();
+    if(!voices.length)return null;
+    const scoreVoice=(v)=>{
+      const name=String(v.name||""); const lang=String(v.lang||""); let score=0;
+      if(/^en-US/i.test(lang))score+=100;
+      else if(/^en/i.test(lang))score+=35;
+      if(/United States|US|American|美式/i.test(name+" "+lang))score+=30;
+      if(/Samantha|Alex|Ava|Allison|Susan|Tom|Jenny|Aria|Guy|Zira|Google US English|Microsoft.*(United States|US)|English \(United States\)/i.test(name))score+=18;
+      if(/Natural|Premium|Neural|Online/i.test(name))score+=8;
+      if(/UK|British|United Kingdom|英式/i.test(name+" "+lang))score-=12;
+      return score;
+    };
+    preferredExamVoice=voices.slice().sort((a,b)=>scoreVoice(b)-scoreVoice(a))[0]||null;
+    return preferredExamVoice;
+  }
+  function applyExamVoice(utterance){
+    utterance.lang=EXAM_VOICE_LANG;
+    const voice=chooseExamVoice();
+    if(voice){utterance.voice=voice; utterance.lang=voice.lang||EXAM_VOICE_LANG;}
+    return voice;
+  }
+  if("speechSynthesis" in window){
+    try{window.speechSynthesis.onvoiceschanged=()=>{preferredExamVoice=null;chooseExamVoice();}; setTimeout(chooseExamVoice,250);}catch(e){}
+  }
+  function speak(wordOrText){const text=typeof wordOrText==="string"?wordOrText:speakTextFor(wordOrText);if(!("speechSynthesis" in window)){showFeedback("这台设备暂时不支持网页朗读。","bad");return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);applyExamVoice(u);u.rate=.70;u.pitch=1.06;window.speechSynthesis.speak(u);}
   function getProgress(wordId){if(!state.progress[wordId])state.progress[wordId]={stage:0,spellStage:0,due:todayStr(),correct:0,wrong:0,spellCorrect:0,spellWrong:0,hints:0,reveals:0,noSpell:0,missingCorrect:0,missingWrong:0,lastSeen:null};const p=state.progress[wordId];if(p.spellStage==null)p.spellStage=p.stage||0;if(p.spellCorrect==null)p.spellCorrect=0;if(p.spellWrong==null)p.spellWrong=0;if(p.hints==null)p.hints=0;if(p.reveals==null)p.reveals=0;if(p.noSpell==null)p.noSpell=0;if(p.missingCorrect==null)p.missingCorrect=0;if(p.missingWrong==null)p.missingWrong=0;return p;}
   function existingProgress(wordId){return state.progress[wordId]||null;}
   function intervalForSpellStage(stage){if(stage<=1)return 0;if(stage===2)return 1;if(stage===3)return 2;if(stage===4)return 3;if(stage===5)return 7;if(stage===6)return 14;if(stage===7)return 21;if(stage===8)return 30;return 45;}
@@ -321,15 +350,15 @@
     let html=`<div class="badge-row"><span class="badge">${escapeHtml(word.group)} · ${escapeHtml(word.unit)}</span><span class="badge purple">${modeName(mode)}</span><span class="badge green">拼写等级 ${Math.min((p.spellStage||0)+1,10)}</span><span class="badge orange">本轮星星 ${session.stars}</span></div>`;
     if(mode==="zhSpell"){
       const target=voicePrimaryTarget(word.en);task.voiceBuffer=task.voiceBuffer||"";
-      html+=`<div class="voice-panel"><div class="prompt">看汉语意思，用语音逐个字母拼出英文。</div><div class="meaning">${safeZh}</div><div class="voice-spell-tip"><b>新版高准确玩法：</b>不要一口气拼完整词。每次只读 <b>一个字母</b>，页面会填进一个格子；读完全部字母后自动判断。这样比连续读 A-P-P-L-E 准确很多。机器听错时可点“退一格”或用下面字母按钮修正识别。</div><div id="voiceSlotWrap">${renderVoiceSlots(target,task.voiceBuffer)}</div><div class="listen-row"><button class="btn primary" data-action="startVoiceSpell">🎙️ 读下一个字母</button><button class="btn good" data-action="finishVoiceLetters">✅ 检查现在拼写</button><button class="btn ghost" data-action="undoVoiceLetter">↩️ 退一格</button><button class="btn ghost" data-action="clearVoiceLetters">重新开始</button></div><div class="hint-actions"><button class="btn ghost" data-action="hint">💡 首字母提示</button><button class="btn warn" data-action="reveal" ${state.settings.allowReveal?"":"disabled"}>👀 想不起来，显示完整单词</button><button class="btn bad" data-action="skip">先跳过，等会再来</button></div><div class="mic-box" id="micBox"><div class="voice-note" id="voiceNote">点“读下一个字母”，只读一个字母，例如只读 “A”。</div><div class="heard-text heard-letters" id="heardText">等待拼写</div></div>${renderVoiceLetterPad()}<div class="voice-actions"><button class="btn ghost" data-action="startVoiceSpellFull">🎙️ 一口气拼完整词（备用，准确率较低）</button><button class="btn ghost listen" data-action="speak">🔊 听标准发音</button></div><div class="letter-hint" id="letterHint">${renderLetterHint(word.en,0)}</div><div class="hint-label" id="hintLabel">先自己拼；想不起来就点“显示完整单词”，会自动记入不会拼列表。</div><div class="answer-reveal" id="answerReveal">正确拼写：<b>${safeEn}</b><button class="btn good" data-action="tryAgain">遮住，再语音拼一次</button><button class="btn ghost listen" data-action="speak">🔊 听标准发音</button></div><div class="diff-box" id="diffBox" style="display:none"></div><div class="combo" id="comboBox">${stars?`<span class="stars">${stars}</span><span>连对 ${session.combo}</span>`:""}</div></div>`;
+      html+=`<div class="voice-panel"><div class="prompt">看汉语意思，用语音逐个字母拼出英文。</div><div class="meaning">${safeZh}</div><div class="voice-spell-tip"><b>新版高准确玩法：</b>不要一口气拼完整词。每次只读 <b>一个字母</b>，页面会填进一个格子；读完全部字母后自动判断。这样比连续读 A-P-P-L-E 准确很多。机器听错时可点“退一格”或用下面字母按钮修正识别。</div><div id="voiceSlotWrap">${renderVoiceSlots(target,task.voiceBuffer)}</div><div class="listen-row"><button class="btn primary" data-action="startVoiceSpell">🎙️ 读下一个字母</button><button class="btn good" data-action="finishVoiceLetters">✅ 检查现在拼写</button><button class="btn ghost" data-action="undoVoiceLetter">↩️ 退一格</button><button class="btn ghost" data-action="clearVoiceLetters">重新开始</button></div><div class="hint-actions"><button class="btn ghost" data-action="hint">💡 首字母提示</button><button class="btn warn" data-action="reveal" ${state.settings.allowReveal?"":"disabled"}>👀 想不起来，显示完整单词</button><button class="btn bad" data-action="skip">先跳过，等会再来</button></div><div class="mic-box" id="micBox"><div class="voice-note" id="voiceNote">点“读下一个字母”，只读一个字母，例如只读 “A”。</div><div class="heard-text heard-letters" id="heardText">等待拼写</div></div>${renderVoiceLetterPad()}<div class="voice-actions"><button class="btn ghost" data-action="startVoiceSpellFull">🎙️ 一口气拼完整词（备用，准确率较低）</button><button class="btn ghost listen" data-action="speak">🔊 听考试美式发音</button></div><div class="letter-hint" id="letterHint">${renderLetterHint(word.en,0)}</div><div class="hint-label" id="hintLabel">先自己拼；想不起来就点“显示完整单词”，会自动记入不会拼列表。</div><div class="answer-reveal" id="answerReveal">正确拼写：<b>${safeEn}</b><button class="btn good" data-action="tryAgain">遮住，再语音拼一次</button><button class="btn ghost listen" data-action="speak">🔊 听考试美式发音</button></div><div class="diff-box" id="diffBox" style="display:none"></div><div class="combo" id="comboBox">${stars?`<span class="stars">${stars}</span><span>连对 ${session.combo}</span>`:""}</div></div>`;
     }else if(mode==="spell"){
       const promptText="看中文、听发音，把英文拼出来。";
-      html+=`<div class="spell-panel"><div class="prompt">${promptText}</div><div class="meaning">${safeZh}</div><div class="listen-row"><button class="btn primary listen" data-action="speak">🔊 听英文</button><button class="btn ghost" data-action="slowSpeak">🐢 慢一点读</button></div><div class="letter-hint" id="letterHint">${renderLetterHint(word.en,0)}</div><div class="hint-label" id="hintLabel">先自己试一下；想不起来就点“显示完整单词”，系统会记入不会拼列表。</div><div class="spelling-box"><input id="spellInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入英文拼写"><button class="btn primary" data-action="checkSpell">检查拼写</button></div><div class="hint-actions"><button class="btn ghost" data-action="hint">💡 小提示</button><button class="btn warn" data-action="reveal" ${state.settings.allowReveal?"":"disabled"}>👀 想不起来，显示完整单词</button><button class="btn bad" data-action="skip">先跳过，等会再来</button></div><div class="answer-reveal" id="answerReveal">正确拼写：<b>${safeEn}</b><button class="btn good" data-action="tryAgain">遮住，再拼一次</button></div><div class="diff-box" id="diffBox" style="display:none"></div><div class="combo" id="comboBox">${stars?`<span class="stars">${stars}</span><span>连对 ${session.combo}</span>`:""}</div></div>`;
+      html+=`<div class="spell-panel"><div class="prompt">${promptText}</div><div class="meaning">${safeZh}</div><div class="listen-row"><button class="btn primary listen" data-action="speak">🔊 听考试发音</button><button class="btn ghost" data-action="slowSpeak">🐢 慢一点读</button></div><div class="letter-hint" id="letterHint">${renderLetterHint(word.en,0)}</div><div class="hint-label" id="hintLabel">先自己试一下；想不起来就点“显示完整单词”，系统会记入不会拼列表。</div><div class="spelling-box"><input id="spellInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入英文拼写"><button class="btn primary" data-action="checkSpell">检查拼写</button></div><div class="hint-actions"><button class="btn ghost" data-action="hint">💡 小提示</button><button class="btn warn" data-action="reveal" ${state.settings.allowReveal?"":"disabled"}>👀 想不起来，显示完整单词</button><button class="btn bad" data-action="skip">先跳过，等会再来</button></div><div class="answer-reveal" id="answerReveal">正确拼写：<b>${safeEn}</b><button class="btn good" data-action="tryAgain">遮住，再拼一次</button></div><div class="diff-box" id="diffBox" style="display:none"></div><div class="combo" id="comboBox">${stars?`<span class="stars">${stars}</span><span>连对 ${session.combo}</span>`:""}</div></div>`;
     }else if(mode==="missing"){
       if(!task.missingPositions)task.missingPositions=pickMissingPositions(word.en);
-      html+=`<div class="miss-panel"><div class="prompt">防漏字练习：看汉语和缺口，把漏掉的字母补回来。</div><div class="meaning">${safeZh}</div><div class="listen-row"><button class="btn primary listen" data-action="speak">🔊 听英文</button><button class="btn ghost" data-action="slowSpeak">🐢 慢一点读</button></div><div class="missing-word" id="missingWord">${renderMissingWord(word.en,task.missingPositions)}</div><div class="danger-box">本词重点：${escapeHtml(dangerNotes(word.en))}。可以只输入缺口字母，也可以输入完整单词。</div><div class="spelling-box"><input id="spellInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入缺口字母或完整单词"><button class="btn primary" data-action="checkMissing">检查补字</button></div><div class="hint-actions"><button class="btn ghost" data-action="speak">🔊 再听一次</button><button class="btn warn" data-action="reveal" ${state.settings.allowReveal?"":"disabled"}>👀 想不起来，显示完整单词</button><button class="btn bad" data-action="skip">先跳过，等会再来</button></div><div class="answer-reveal" id="answerReveal">完整单词：<b>${safeEn}</b>缺口答案：<b>${escapeHtml(missingLetters(word.en,task.missingPositions))}</b><button class="btn good" data-action="tryAgain">遮住，再补一次</button></div><div class="diff-box" id="diffBox" style="display:none"></div><div class="combo" id="comboBox">${stars?`<span class="stars">${stars}</span><span>连对 ${session.combo}</span>`:""}</div></div>`;
+      html+=`<div class="miss-panel"><div class="prompt">防漏字练习：看汉语和缺口，把漏掉的字母补回来。</div><div class="meaning">${safeZh}</div><div class="listen-row"><button class="btn primary listen" data-action="speak">🔊 听考试发音</button><button class="btn ghost" data-action="slowSpeak">🐢 慢一点读</button></div><div class="missing-word" id="missingWord">${renderMissingWord(word.en,task.missingPositions)}</div><div class="danger-box">本词重点：${escapeHtml(dangerNotes(word.en))}。可以只输入缺口字母，也可以输入完整单词。</div><div class="spelling-box"><input id="spellInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入缺口字母或完整单词"><button class="btn primary" data-action="checkMissing">检查补字</button></div><div class="hint-actions"><button class="btn ghost" data-action="speak">🔊 再听一次</button><button class="btn warn" data-action="reveal" ${state.settings.allowReveal?"":"disabled"}>👀 想不起来，显示完整单词</button><button class="btn bad" data-action="skip">先跳过，等会再来</button></div><div class="answer-reveal" id="answerReveal">完整单词：<b>${safeEn}</b>缺口答案：<b>${escapeHtml(missingLetters(word.en,task.missingPositions))}</b><button class="btn good" data-action="tryAgain">遮住，再补一次</button></div><div class="diff-box" id="diffBox" style="display:none"></div><div class="combo" id="comboBox">${stars?`<span class="stars">${stars}</span><span>连对 ${session.combo}</span>`:""}</div></div>`;
     }else if(mode==="speakCheck"){
-      html+=`<div class="voice-panel"><div class="prompt">看见英文后，大声读出来；系统会听你读成了什么。</div><div class="big-word">${safeEn}</div><div class="meaning">${safeZh}</div><div class="listen-row"><button class="btn primary" data-action="startVoice">🎙️ 开始朗读</button><button class="btn ghost listen" data-action="speak">🔊 听标准发音</button><button class="btn bad" data-action="skip">先跳过，等会再来</button></div><div class="mic-box" id="micBox"><div class="voice-note" id="voiceNote">点“开始朗读”，允许麦克风，然后读这个词。</div><div class="heard-text" id="heardText">等待朗读</div></div><div class="answer-reveal" id="answerReveal">目标单词：<b>${safeEn}</b><button class="btn good" data-action="startVoice">再读一次</button></div><div class="combo" id="comboBox">${stars?`<span class="stars">${stars}</span><span>连对 ${session.combo}</span>`:""}</div></div>`;
+      html+=`<div class="voice-panel"><div class="prompt">看见英文后，大声读出来；系统会听你读成了什么。</div><div class="big-word">${safeEn}</div><div class="meaning">${safeZh}</div><div class="listen-row"><button class="btn primary" data-action="startVoice">🎙️ 开始朗读</button><button class="btn ghost listen" data-action="speak">🔊 听考试美式发音</button><button class="btn bad" data-action="skip">先跳过，等会再来</button></div><div class="mic-box" id="micBox"><div class="voice-note" id="voiceNote">点“开始朗读”，允许麦克风，然后读这个词。</div><div class="heard-text" id="heardText">等待朗读</div></div><div class="answer-reveal" id="answerReveal">目标单词：<b>${safeEn}</b><button class="btn good" data-action="startVoice">再读一次</button></div><div class="combo" id="comboBox">${stars?`<span class="stars">${stars}</span><span>连对 ${session.combo}</span>`:""}</div></div>`;
     }else if(mode==="read"){
       html+=`<div class="prompt">先听，再跟着读出来。</div><div class="big-word">${safeEn}</div><div class="meaning">${safeZh}</div><div class="listen-row"><button class="btn primary listen" data-action="speak">🔊 读一读</button><button class="btn good" data-action="readDone">我会读了</button></div><div class="tiny" style="text-align:center">全流程模式会先读、再认意思，最后进入拼写。</div>`;
     }else if(mode==="enToZh"){
@@ -618,7 +647,7 @@
     if(session.locked||!session.current||session.current.mode!=="zhSpell")return;const t=session.current;const {word}=t;const Ctor=recognitionCtor();
     if(!Ctor){showFeedback("这个浏览器暂时不支持语音识别。可以先用下面字母按钮修正，或用‘拼写专项’键盘练习。","bad");setVoiceUI("浏览器不支持语音识别","无法开始");return;}
     try{if(activeRecognizer)activeRecognizer.abort();}catch(e){}
-    const rec=new Ctor();activeRecognizer=rec;t.voiceSpellAttempts=(t.voiceSpellAttempts||0)+1;rec.lang="en-US";rec.continuous=false;rec.interimResults=false;rec.maxAlternatives=20;attachLetterGrammar(rec);
+    const rec=new Ctor();activeRecognizer=rec;t.voiceSpellAttempts=(t.voiceSpellAttempts||0)+1;rec.lang=EXAM_VOICE_LANG;rec.continuous=false;rec.interimResults=false;rec.maxAlternatives=20;attachLetterGrammar(rec);
     rec.onstart=()=>{setVoiceUI("正在听：这次只读一个字母。","🎙️ 正在听一个字母...",true);showFeedback("这次只读一个字母，读完停一下。","warn");};
     rec.onerror=(e)=>{setVoiceUI("没有识别成功，可以再点一次读这个字母。",e.error==="not-allowed"?"麦克风未允许":"再试一次",false);showFeedback(e.error==="not-allowed"?"需要允许浏览器使用麦克风。":"这次没听清楚，不算错，再读一次。","bad");};
     rec.onend=()=>{const box=$("micBox");if(box)box.classList.remove("mic-live");};
@@ -630,7 +659,7 @@
     if(session.locked||!session.current||session.current.mode!=="zhSpell")return;const t=session.current;const {word}=t;const Ctor=recognitionCtor();
     if(!Ctor){showFeedback("这个浏览器暂时不支持语音识别。可以换 Chrome/Safari，或先用‘拼写专项’键盘练习。","bad");setVoiceUI("浏览器不支持语音识别","无法开始");return;}
     try{if(activeRecognizer)activeRecognizer.abort();}catch(e){}
-    const rec=new Ctor();activeRecognizer=rec;t.voiceSpellAttempts=(t.voiceSpellAttempts||0)+1;rec.lang="en-US";rec.continuous=false;rec.interimResults=false;rec.maxAlternatives=20;attachLetterGrammar(rec);
+    const rec=new Ctor();activeRecognizer=rec;t.voiceSpellAttempts=(t.voiceSpellAttempts||0)+1;rec.lang=EXAM_VOICE_LANG;rec.continuous=false;rec.interimResults=false;rec.maxAlternatives=20;attachLetterGrammar(rec);
     rec.onstart=()=>{setVoiceUI("正在听，请慢一点，一个字母一个字母拼。","🎙️ 正在听...",true);showFeedback("备用模式：请每个字母之间停半秒。逐字母模式通常更准。","warn");};
     rec.onerror=(e)=>{setVoiceUI("没有识别成功，可以再点一次。",e.error==="not-allowed"?"麦克风未允许":"再试一次",false);showFeedback(e.error==="not-allowed"?"需要允许浏览器使用麦克风。":"这次没听清楚，再试一次。","bad");};
     rec.onend=()=>{const box=$("micBox");if(box)box.classList.remove("mic-live");};
@@ -640,13 +669,13 @@
 
     function startVoiceCheck(){
     if(session.locked||!session.current||session.current.mode!=="speakCheck")return;const t=session.current;const {word}=t;const Ctor=recognitionCtor();
-    if(!Ctor){showFeedback("这个浏览器暂时不支持网页语音识别。可以换 Safari/Chrome，或先用“听标准发音 + 自己读”的方式练。","bad");setVoiceUI("浏览器不支持语音识别","无法开始");return;}
+    if(!Ctor){showFeedback("这个浏览器暂时不支持网页语音识别。可以换 Safari/Chrome，或先用“听考试美式发音 + 自己读”的方式练。","bad");setVoiceUI("浏览器不支持语音识别","无法开始");return;}
     try{if(activeRecognizer)activeRecognizer.abort();}catch(e){}
-    const rec=new Ctor();activeRecognizer=rec;t.voiceAttempts=(t.voiceAttempts||0)+1;rec.lang="en-US";rec.continuous=false;rec.interimResults=false;rec.maxAlternatives=10;
+    const rec=new Ctor();activeRecognizer=rec;t.voiceAttempts=(t.voiceAttempts||0)+1;rec.lang=EXAM_VOICE_LANG;rec.continuous=false;rec.interimResults=false;rec.maxAlternatives=10;
     rec.onstart=()=>{setVoiceUI("正在听，请清楚地读一遍。","🎙️ 正在听...",true);showFeedback("开始录音了，读出来就可以。","warn");};
     rec.onerror=(e)=>{setVoiceUI("没有识别成功，可以再点一次开始朗读。",e.error==="not-allowed"?"麦克风未允许":"再试一次",false);showFeedback(e.error==="not-allowed"?"需要允许浏览器使用麦克风。":"这次没听清楚，再试一次。","bad");};
     rec.onend=()=>{const box=$("micBox");if(box)box.classList.remove("mic-live");};
-    rec.onresult=(e)=>{const transcripts=[];for(let i=0;i<e.results.length;i++){for(let j=0;j<e.results[i].length;j++){transcripts.push(e.results[i][j].transcript)}}const heard=transcripts[0]||"";setVoiceUI("我听到的是：",heard,false);const ok=isSpeechCorrect(transcripts,word.en);if(ok){session.locked=true;showFeedback("读对了！开口成功，奖励 2 颗星。","good");handleVoiceCorrect(word,t);session.done++;updateProgressBar();maybeConfetti(12);session.pendingAdvance=true;saveSessionSnapshot();setTimeout(()=>{session.pendingAdvance=false;nextTask();},850);}else{t.wasWrong=true;const reveal=$("answerReveal");if(reveal)reveal.classList.add("show");showFeedback(`我听到的是“${heard||"没听清"}”。没关系，再听标准发音后重读一次。`,"bad");if(t.voiceAttempts>=2){handleVoiceWrong(word,t,false);}}};
+    rec.onresult=(e)=>{const transcripts=[];for(let i=0;i<e.results.length;i++){for(let j=0;j<e.results[i].length;j++){transcripts.push(e.results[i][j].transcript)}}const heard=transcripts[0]||"";setVoiceUI("我听到的是：",heard,false);const ok=isSpeechCorrect(transcripts,word.en);if(ok){session.locked=true;showFeedback("读对了！开口成功，奖励 2 颗星。","good");handleVoiceCorrect(word,t);session.done++;updateProgressBar();maybeConfetti(12);session.pendingAdvance=true;saveSessionSnapshot();setTimeout(()=>{session.pendingAdvance=false;nextTask();},850);}else{t.wasWrong=true;const reveal=$("answerReveal");if(reveal)reveal.classList.add("show");showFeedback(`我听到的是“${heard||"没听清"}”。没关系，再听考试美式发音后重读一次。`,"bad");if(t.voiceAttempts>=2){handleVoiceWrong(word,t,false);}}};
     try{rec.start();}catch(e){setVoiceUI("语音识别没有启动成功，可以再点一次。","再试一次",false);showFeedback("语音识别没有启动成功，可以再点一次。","bad");}
   }
   function handleVoiceCorrect(word,t){const p=getProgress(word.id);p.readCorrect=(p.readCorrect||0)+1;p.correct=(p.correct||0)+1;p.lastSeen=todayStr();p.readStage=Math.min(10,(p.readStage||0)+1);p.stage=Math.max(p.stage||0,Math.min(3,p.readStage));p.due=addDays(todayStr(),Math.min(3,Math.max(1,p.readStage)));state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=2;session.practicedIds.add(word.id);session.readIds.add(word.id);session.voiceIds.add(word.id);recordHistory(true,word.id,"speakCheck",2,t);awardBadges();saveState();updateStats();}
@@ -655,13 +684,13 @@
   function tryAgain(){const t=session.current;if(!t)return;const reveal=$("answerReveal");const input=$("spellInput");if(reveal)reveal.classList.remove("show");if(input){input.value="";input.focus();}if(t.mode==="zhSpell"){t.voiceBuffer="";updateVoiceSpellDisplay();saveSessionSnapshot();setVoiceUI("答案已经遮住了，从第一个字母重新读。","等待拼写",false);}showFeedback(t.mode==="zhSpell"?"现在遮住了，从第一个字母重新语音拼。":"现在遮住了，再拼一次。","warn");}
   function skipWord(){if(session.locked||!session.current)return;session.locked=true;const {word,mode}=session.current;if(mode==="speakCheck")handleVoiceWrong(word,session.current,true);else handleWrong(word,mode,true);session.done++;updateProgressBar();showFeedback("没关系，这个词等会儿再来一次。","warn");session.pendingAdvance=true;saveSessionSnapshot();setTimeout(()=>{session.pendingAdvance=false;nextTask();},700);}
   function showHint(){const t=session.current;if(!t||!["spell","zhSpell"].includes(t.mode))return;t.hintLevel=Math.min(2,(t.hintLevel||0)+1);session.hintIds.add(t.word.id);const p=getProgress(t.word.id);p.hints=(p.hints||0)+1;state.progress[t.word.id]=p;saveState();updateHint();showFeedback(t.hintLevel===1?"给你首字母提示。":"再给你首尾字母提示。","warn");}
-  function slowSpeak(){if(!session.current)return;const word=session.current.word;if(!("speechSynthesis" in window)){showFeedback("这台设备暂时不支持网页朗读。","bad");return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(speakTextFor(word));u.lang="en-US";u.rate=.48;u.pitch=1.03;window.speechSynthesis.speak(u);}
+  function slowSpeak(){if(!session.current)return;const word=session.current.word;if(!("speechSynthesis" in window)){showFeedback("这台设备暂时不支持网页朗读。","bad");return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(speakTextFor(word));applyExamVoice(u);u.rate=.48;u.pitch=1.03;window.speechSynthesis.speak(u);}
   function showFeedback(text,type){const fb=$("feedback");if(!fb)return;fb.textContent=text;fb.className="feedback "+(type||"");}
   function randomGood(){return praiseGeneric();}
   function updateProgressBar(){const target=Math.max(1,Number(state.settings.sessionSize)||session.startedQueueLength||1);const pct=Math.min(100,Math.round((session.done/target)*100));els.barFill.style.width=pct+"%";els.progressText.textContent=`${Math.min(session.done,target)}/${target}`;}
 
   function renderDone(allDone=false){session.active=false;session.pendingAdvance=false;clearSessionSnapshot();updateProgressBar();const attempts=session.correct+session.wrong;const accuracy=attempts?Math.round(session.correct/attempts*100):100;const practiced=session.practicedIds.size;const spelling=session.spellIds.size;const voice=session.voiceIds?session.voiceIds.size:0;const hint=session.hintIds.size;const reveal=session.revealedIds.size;let badgeText="";if(session.bestCombo>=5)badgeText+='<span class="badge purple">🔥 连对达人</span>';if(accuracy>=90&&attempts>=8)badgeText+='<span class="badge green">🎯 高正确率</span>';if(session.stars>=25)badgeText+='<span class="badge orange">⭐ 星星收集家</span>';els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="badge-row" style="justify-content:center"><span class="badge green">完成</span><span class="badge orange">本轮 ${session.stars} 星</span><span class="badge purple">正确率 ${accuracy}%</span>${badgeText}</div><div class="start-title">${allDone?"今天已经完成啦":"今日拼写闯关完成"}</div><p class="start-sub">本轮练习 <b>${practiced}</b> 个词，其中拼写/防漏字 <b>${spelling}</b> 个、朗读检测 <b>${voice}</b> 个；用了提示 ${hint} 个，查看完整答案 ${reveal} 个。点过答案和拼错的词已经自动进入“不会拼列表”。</p><div class="selector-actions three"><button class="btn primary start-btn" id="moreNewBtn">学习更多的新单词</button><button class="btn good start-btn" id="againBtn">再来一轮拼写</button><button class="btn ghost start-btn" data-set-mode="missed" data-action="startMode">练错词</button></div><div class="quick-grid"><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">继续语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="voice" data-action="startMode">朗读检测</button></div></div></div>`;$("againBtn").addEventListener("click",startSession);$("moreNewBtn").addEventListener("click",startMoreNewWords);renderReviewList();updateStats();maybeConfetti(28);}
-  function renderStart(){updateProgressBar();updateCustomWordsNote();const chosen=selectedWords();const customActive=state.settings.useCustomWords&&customSelectedWords().length>0;const due=countDue(chosen);const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const todayNewLeft=Math.max(0,Number(state.settings.dailyNew)||8);const isVoice=state.settings.mode==="voice";const isMissing=state.settings.mode==="missing";const isZh=state.settings.mode==="zhSpell";let intro;if(customActive)intro=`已启用自主选词：本轮只从你勾选的 <b>${chosen.length}</b> 个单词里出题。可以用于听写前专项练习；错词仍会自动统计。`;else if(isVoice)intro=`今天会出现英文单词，孩子点麦克风后读出来；系统会根据识别到的英文判断是否读对。读错不会惩罚，可以听标准发音后再试。`;else if(isMissing)intro=`今天专练“漏字点”：系统会给出汉语和带缺口的英文，让孩子补字母。适合解决漏字、顺序不稳、b/d/p/q 等方向字母混乱。`;else if(isZh)intro=`今天只做“看汉语，用语音拼英文”。孩子按字母读出来，系统自动判断；不会时点“显示完整单词”，会自动记入不会拼列表，并统计错误次数。`;else intro=`今天系统会优先安排：待复习词 <b>${due}</b> 个、薄弱词 <b>${weak}</b> 个、不会拼词 <b>${noSpell}</b> 个、新词最多 <b>${todayNewLeft}</b> 个。`;els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="badge-row" style="justify-content:center"><span class="badge">${customActive?"自选词":escapeHtml(rangeLabel())}</span><span class="badge green">${chosen.length} 个词</span><span class="badge purple">${modeName(state.settings.mode)}</span><span class="no-spell-badge">不会拼 ${noSpell}</span></div><div class="start-title">${customActive?"只练自己选的词":isVoice?"打开就直接朗读":isMissing?"打开就防漏字":"打开就语音拼英文"}</div><p class="start-sub">${intro}</p><button class="btn primary start-btn" id="startMain">${isVoice?"开始今日朗读":isMissing?"开始防漏字拼写":"开始今日语音拼写"}</button><div class="quick-grid"><button class="btn ghost" data-action="openSelector">自主选择单词</button><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="missed" data-action="startMode">不会拼列表</button></div></div></div>`;$("startMain").addEventListener("click",startSession);}
+  function renderStart(){updateProgressBar();updateCustomWordsNote();const chosen=selectedWords();const customActive=state.settings.useCustomWords&&customSelectedWords().length>0;const due=countDue(chosen);const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const todayNewLeft=Math.max(0,Number(state.settings.dailyNew)||8);const isVoice=state.settings.mode==="voice";const isMissing=state.settings.mode==="missing";const isZh=state.settings.mode==="zhSpell";let intro;if(customActive)intro=`已启用自主选词：本轮只从你勾选的 <b>${chosen.length}</b> 个单词里出题。可以用于听写前专项练习；错词仍会自动统计。`;else if(isVoice)intro=`今天会出现英文单词，孩子点麦克风后读出来；系统会根据识别到的英文判断是否读对。读错不会惩罚，可以听考试美式发音后再试。`;else if(isMissing)intro=`今天专练“漏字点”：系统会给出汉语和带缺口的英文，让孩子补字母。适合解决漏字、顺序不稳、b/d/p/q 等方向字母混乱。`;else if(isZh)intro=`今天只做“看汉语，用语音拼英文”。孩子按字母读出来，系统自动判断；不会时点“显示完整单词”，会自动记入不会拼列表，并统计错误次数。标准朗读采用江苏考试训练建议的美式英语优先发音。`;else intro=`今天系统会优先安排：待复习词 <b>${due}</b> 个、薄弱词 <b>${weak}</b> 个、不会拼词 <b>${noSpell}</b> 个、新词最多 <b>${todayNewLeft}</b> 个。`;els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="badge-row" style="justify-content:center"><span class="badge">${customActive?"自选词":escapeHtml(rangeLabel())}</span><span class="badge green">${chosen.length} 个词</span><span class="badge purple">${modeName(state.settings.mode)}</span><span class="no-spell-badge">不会拼 ${noSpell}</span></div><div class="start-title">${customActive?"只练自己选的词":isVoice?"打开就直接朗读":isMissing?"打开就防漏字":"打开就语音拼英文"}</div><p class="start-sub">${intro}</p><button class="btn primary start-btn" id="startMain">${isVoice?"开始今日朗读":isMissing?"开始防漏字拼写":"开始今日语音拼写"}</button><div class="quick-grid"><button class="btn ghost" data-action="openSelector">自主选择单词</button><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="missed" data-action="startMode">不会拼列表</button></div></div></div>`;$("startMain").addEventListener("click",startSession);}
   function countDue(words){const today=todayStr();return words.filter(w=>{const p=existingProgress(w.id);return p&&(!p.due||p.due<=today)}).length;}
   function countWeak(words){return words.filter(w=>{const p=existingProgress(w.id);return p&&((p.spellWrong||p.wrong||0)>0 || (p.reveals||0)>0 || (p.noSpell||0)>0 || (p.missingWrong||0)>0 || (p.spellStage||0)<3)}).length;}
   function updateStats(){updateCustomWordsNote();const chosen=selectedWords();const spellingReady=chosen.filter(w=>(existingProgress(w.id)?.spellStage||0)>=5).length;const due=countDue(chosen);const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const missingWrong=chosen.reduce((sum,w)=>sum+(existingProgress(w.id)?.missingWrong||0),0);const streak=computeStreak();els.statsBox.innerHTML=`<div class="stat"><b>${chosen.length}</b><small>当前范围词数</small></div><div class="stat"><b>${noSpell}</b><small>不会拼词数</small></div><div class="stat"><b>${weak}</b><small>需加强拼写</small></div><div class="stat"><b>${missingWrong}</b><small>漏字练错次数</small></div><div class="stat"><b>${spellingReady}</b><small>拼写较稳</small></div><div class="stat"><b>${state.totalStars||0}</b><small>总星星</small></div>`;renderTodaySummary();}
@@ -689,6 +718,186 @@
     document.addEventListener("click",e=>{const choice=e.target.closest(".choice");if(choice)chooseAnswer(choice);});
   }
   function showToastOnCard(text){if(!session.active){els.cardContent.insertAdjacentHTML("afterbegin",`<div class="feedback good" style="margin-bottom:10px">${escapeHtml(text)}</div>`);setTimeout(renderStart,900);} }
+
+
+  /* v11 潜移默化学习信念夸奖：普通夸奖短而暖，大夸奖加入复利/反过来想/能力圈思想 */
+  function praiseEmojiSoft(){
+    const packs=["🌟👏✨","🌱🧠✨","📚🔥🌈","🎯💪⭐","🪙⏳🌱","🔍🧩✅","🚪🌈✨","🧠⚡👏","🏆🎉🌟","🌊⛵✨","🪜📖⭐","🛠️🧠💫","🌻📚😊","🧭🏔️⭐","🪄🔤🌈","🦁👑🔥","🍀🌟👏","🧡🌟🙌","🚀🔥⭐","🎖️📖🌟"];
+    return pick(packs);
+  }
+  function mindsetNudge(kind){
+    const meaning=[
+      "你多会一个单词，以后读题就少一点害怕",
+      "今天这个词被你拿下了，明天它就不再吓人",
+      "学习不是为了证明你乖，是为了让你以后选择更多",
+      "多会一个词，就像多拿到一把打开题目的小钥匙",
+      "你刚刚不是只拼对一个词，而是在给未来的自己帮忙",
+      "今天的这一点会，在以后会变成更大的从容",
+      "每多掌握一点，以后面对英语就少一点慌",
+      "这个词进入你的工具箱了，以后做题会更有底气"
+    ];
+    const compound=[
+      "每天多会一点点，时间会站在你这边",
+      "你今天拼对的每一个词，都像往未来存了一枚金币",
+      "小进步不会马上轰轰烈烈，但它会慢慢变成真正的实力",
+      "真正厉害的进步，常常就是这样一点点积累出来的",
+      "今天的一小步，放久了就是很大的距离",
+      "复利不是一天变强，而是每天都多一点点",
+      "你现在攒下的每一次认真，都会在以后帮你省力",
+      "别小看这一词，很多个‘这一词’会变成实力"
+    ];
+    const reverse=[
+      "错误不是敌人，它在告诉我们下次要盯住哪里",
+      "你发现了一个容易漏的地方，这比蒙对更有价值",
+      "真正的聪明，是少犯同一种错",
+      "高手不是不犯错，而是会从错误里找到线索",
+      "反过来想：我们不是怕错，而是靠错题找到突破口",
+      "今天少漏一个字母，就是很扎实的进步",
+      "能看见自己的易错点，说明你已经在变会学",
+      "把错的地方抓出来，就是把难点变小了"
+    ];
+    const control=[
+      "你刚刚把注意力拉回来了，这很厉害",
+      "你没有被卡住，你选择再试一次",
+      "能继续，就是一种很强的能力",
+      "你刚才证明了：不会可以变成会",
+      "你不是一下子变强的，你是在一次次继续里变强",
+      "刚才那一下坚持，是真的有力量",
+      "你正在练的不只是单词，还有把自己带回来的能力",
+      "你愿意再来一次，这就是成长的开关"
+    ];
+    const circle=[
+      "先把眼前这一小块练熟，就是在扩大自己的能力圈",
+      "把能掌握的小范围练扎实，比一下子贪多更聪明",
+      "先稳住一个词，再稳住一组词，这就是会学习",
+      "你正在把‘我能掌握的范围’往外推一点点",
+      "厉害的人不是全都会，而是知道先把哪一块练稳",
+      "今天先拿下这个词，能力圈就悄悄扩大了一点"
+    ];
+    const all={meaning,compound,reverse,control,circle};
+    return pick(all[kind]||meaning);
+  }
+  function maybeMindsetTail(forceKind){
+    const kinds=["meaning","compound","reverse","control","circle"];
+    const kind=forceKind||pick(kinds);
+    return mindsetNudge(kind);
+  }
+  function praiseGeneric(){
+    const style=nextPraiseStyle();
+    const addMind=Math.random()<0.34; // 普通夸奖里适度加入学习信念，避免说教
+    let text="";
+    if(style===0){
+      const open=["拼对了","这一题拿下","字母排队成功","这个词被你稳稳抓住","刚才这一拼很漂亮","你把顺序守住了","这一回忆很有力量","你的大脑正在升级","你刚才不是在猜，是在认真回忆","这个答案落地很稳"];
+      const body=["不是靠运气，是你认真听、认真想出来的","你没有被漏字打败，这很厉害","你把中文意思和英文拼写连起来了","你刚才的专注力真的在线","这个词已经开始听你的话了","你一步一步把它拼稳了","这就是高质量回忆","你正在把难词变成熟词","你把字母顺序照顾得很清楚","这一小步很实在"];
+      text=`${pick(open)}！${pick(body)}。`;
+    }else if(style===1){
+      const poem=["长风破浪会有时，今天这一词已成舟","会当凌绝顶，一览拼写小山丘","春风得意马蹄疾，一眼看出字母齐","千磨万击还坚劲，这个单词被你定住了","不积跬步，无以至千里；这一词就是今天的一步","读书破万卷，下笔如有神；刚才这一拼有神采","宝剑锋从磨砺出，拼写稳从练习来","纸上得来终觉浅，亲自拼出才算真","欲穷千里目，更上一层楼；你又上了一层","少年不惧词路远，一字一音向前行"];
+      text=`${pick(poem)}。`;
+    }else if(style===2){
+      const guwen=["善！一字一音，皆有章法","甚佳！心定而字正，功夫已见","可嘉！虽为一词，亦见恒心","妙哉！不躁不乱，字母成列","大善！今日之进，非偶然也","嘉许！能审其形，能记其序","甚稳！心有所专，手口皆准","可喜！知其义，明其音，成其拼","善学者不惧错，能改即进","此一拼也，见认真二字","学贵有恒，进贵有法","知不足而能补，善学也"];
+      text=`${pick(guwen)}。`;
+    }else if(style===3){
+      const eng=[
+        ["Excellent spelling!","你的拼写很出色！"],["You nailed it!","你把这个词拿下了！"],["Great focus!","刚才的专注力很棒！"],["That was a strong try!","这次尝试很有力量！"],["Your brain is building the word!","你的大脑正在把这个词建起来！"],["One more word unlocked!","又解锁了一个单词！"],["Clean and steady!","清楚又稳定！"],["You remembered the order!","你记住了字母顺序！"],["Mistakes did not stop you!","错误没有拦住你！"],["You are getting stronger!","你正在变强！"],
+        ["Small steps compound!","小进步会慢慢变成大实力！"],["You turned effort into skill!","你把努力变成了能力！"],["You found the pattern!","你找到了字母规律！"],["Keep going, one word at a time!","继续，一个词一个词来！"]
+      ];
+      const e=pick(eng); text=`${e[0]}｜${e[1]}`;
+    }else if(style===4){
+      const game=["通关成功","拼写连击达成","单词怪兽被击败","记忆宝箱打开","字母小队集合成功","今日英雄值上升","专注护盾启动","错词副本被你推进了","拼写经验值 +10","大脑技能树点亮一格","未来金币 +1","能力圈扩大一点点"];
+      const tail=["下一关也稳稳来","这个操作很帅","你的技能条在上涨","你已经不是原来的你了","继续攒能量","这一击很关键","这就是小胜利","稳扎稳打最厉害","今天的小胜利会累积成大胜利"];
+      text=`${pick(game)}！${pick(tail)}。`;
+    }else if(style===5){
+      const warm=["我看见你在努力","你刚才没有放弃","愿意再试一次本身就很珍贵","你把注意力拉回来了","你正在一点点变稳","你不是一下子会的，你是练出来的","这一步很小，但很真实","你能修正错误，这特别难得","你今天的大脑很辛苦，也很棒","你正在用行动证明自己可以"];
+      const tail=["这值得认真表扬","我为这一下进步高兴","给自己一点掌声吧","慢慢来，也是在前进","继续这样就很好","这个进步我记下了","你做到了一个关键动作","这就是成长的证据"];
+      text=`${pick(warm)}，${pick(tail)}。`;
+    }else if(style===6){
+      const funny=["单词小怪说：我被拼服了","字母们排队说：谢谢你把我们放对位置","大脑小工厂开足马力，生产出一个正确单词","漏字小妖怪这次没得逞","拼写雷达扫描成功","记忆仓库新增一件宝贝","这个词盖章：已被你认识","字母列车准点进站","拼写小侦探破案成功","单词城堡又插上一面小旗"];
+      text=`${pick(funny)}！`;
+    }else if(style===7){
+      const science=["你的大脑刚刚完成了一次精准检索","字母顺序像小齿轮一样咬合上了","这次回忆路径被加固了一下","你把声音、意思和拼写连成了一条线","注意力像激光一样照到了这个词上","这个词的记忆信号更强了","你刚才完成了一次很棒的主动提取","拼写电路又通了一格"];
+      text=`${pick(science)}。`;
+    }else if(style===8){
+      const sports=["漂亮进球，单词入网","这一球打得稳，字母全进位","你刚才像最后一棒冲线一样稳","拼写投篮命中，手感来了","防守漏字成功，拿下这一分","这一题像一个干净利落的扣杀","节奏稳、动作准，比分上涨","这一回合赢得很硬气"];
+      text=`${pick(sports)}。`;
+    }else if(style===9){
+      const adventure=["探险地图又点亮一格","你翻过了一座小单词山","字母森林里的路被你找到了","拼写飞船成功着陆","勇者又收集到一个英文宝石","这条记忆小路被你踩实了","你把一个陌生词变成了自己的装备","前方有难词，但你已经有办法了"];
+      text=`${pick(adventure)}。`;
+    }else if(style===10){
+      const gentle=["这一次真的值得停下来夸一夸","你刚才的努力不是白费的","我喜欢你刚才认真想的样子","你没有急着乱来，而是把字母放稳了","就这样，一点一点会越来越顺","你已经比刚开始更有方法了","这个进步很安静，但很扎实","你正在把自己带向更会学习的方向"];
+      text=`${pick(gentle)}。`;
+    }else if(style===11){
+      const coach=["你刚才完成了三件事：看懂中文、想起发音、排好字母","这次不是死记硬背，是主动回忆","你把注意力停在了正确的地方","这就是我们要练的能力：想起来、拼出来、检查好","你已经知道怎么和这个词打交道了","这一下让大脑多了一条路","你把单词从‘见过’推进到‘会拼’","这个词的形状在你脑子里更清楚了"];
+      text=`${pick(coach)}。`;
+    }else if(style===12){
+      const idiom=["聚沙成塔，这一词就是一粒金沙","滴水穿石，今天的这一拼很有力量","稳扎稳打，步步为营","熟能生巧，巧从今天这一拼开始","锲而不舍，金石可镂；这个词被你刻下一笔","有条不紊，字母归位","迎难而上，拼写成功","循序渐进，越拼越稳","专心致志，答案自来","百尺竿头，又进一步"];
+      text=`${pick(idiom)}。`;
+    }else if(style===13){
+      const animal=["小老虎式勇敢拼写，嗷呜，拿下","小海豚跃出水面，字母也跟着跳对了","小鹰展开翅膀，飞过这个单词","小熊认真搬蜂蜜，你认真搬字母","小狐狸聪明上线，找到正确顺序","小乌龟稳稳前进，也能到达终点","小狮子今天很有王者气势","小企鹅排队成功，字母也排队成功"];
+      text=`${pick(animal)}。`;
+    }else if(style===14){
+      const music=["这一拼像一个准确的音符","字母节奏敲对了","你的声音把单词拼成了一段小旋律","拼写小鼓点，咚咚咚，正确","这一串字母很有节奏感","你把单词唱成了正确顺序","节拍稳，字母稳","拼写旋律完整播放"];
+      text=`${pick(music)}。`;
+    }else if(style===15){
+      const movie=["镜头推进，主角冷静拼出正确答案","这一幕可以配上胜利音乐","单词难关在这一刻被你反转了","如果这是电影，刚才就是高光时刻","你的专注力刚刚完成了一次漂亮转场","字幕出现：拼写成功","这一集的标题可以叫《字母归位》","主角没有放弃，于是单词被拿下"];
+      text=`${pick(movie)}。`;
+    }else if(style===16){
+      const chef=["这次拼写像一道配料刚刚好的菜","字母火候正好，顺序也对味","你把这个词调出了正确味道","拼写小厨房开锅，成品很香","每个字母都像调料一样放对了位置","这份单词小点心完成得不错"];
+      text=`${pick(chef)}。`;
+    }else if(style===17){
+      const builder=["你又给英语小房子添了一块砖","字母地基打稳了，这个词站住了","拼写桥梁成功架好","你正在一层一层搭建自己的词库","这个词的小屋已经有门牌号了","每个字母都放到了该在的位置"];
+      text=`${pick(builder)}。`;
+    }else if(style===18){
+      const detective=["线索找齐，拼写破案成功","你像侦探一样抓住了关键字母","漏字嫌疑人被你发现了","字母现场整理完毕，答案成立","这次推理很清楚，拼写很稳","小侦探上线，单词案件告破"];
+      text=`${pick(detective)}。`;
+    }else{
+      const magic=["魔法咒语念对了，单词亮起来了","你把字母变成了一道小光","拼写魔杖轻轻一点，答案出现","记忆魔法生效，这个词被你收进书里","字母星星排成正确形状","这一题像被你施了专注魔法"];
+      text=`${pick(magic)}。`;
+    }
+    if(addMind) text += " " + maybeMindsetTail();
+    text += " " + praiseEmojiSoft();
+    if(window.__lastPraiseText===text)text += " ✨";
+    window.__lastPraiseText=text;
+    return text;
+  }
+  function praiseAfterReveal(){
+    const lead=["看过答案后还能遮住再拼对","愿意修正比一次就会更重要","不会时知道求助，然后再自己拼出来","从‘想不起来’到‘我能拼’，这一步很棒","你没有卡住，而是用了正确的学习方法","先看答案再重拼，这是把错误变成进步","看答案不是失败，能再拼出来才是本事","你把不会的词重新追回来了","你没有逃走，而是回头把它补上了","先借一盏灯，再自己走路，这很会学习"];
+    const tail=["这是真正的学习","这说明你在把单词重新装进大脑","这一步特别值得夸","这比装作会了更厉害","你的修正能力很强","今天这个词被你追回来了","这叫从错误里长出能力","你的学习方法正在变聪明","能改，就是进步","这比一开始就放弃强太多"];
+    return `${pick(lead)}，${pick(tail)}。${Math.random()<0.6?" "+maybeMindsetTail("reverse"):""} ${praiseEmojiSoft()}`;
+  }
+  function praiseAfterHint(){
+    const lead=["用了提示还能拼出来","有一点帮助后能自己完成","你把提示变成了自己的答案","你没有被难点吓住","提示只是扶一下，真正拼出来的是你","你会利用线索，这很聪明","先抓住一个线索，再拼完整个词","你把小提示变成了大进步"];
+    const tail=["说明这个词正在变熟","说明字母顺序正在固定","继续这样就会越来越稳","这就是从不会到会的台阶","你的大脑抓住线索了","下一次可能就不需要提示了","这是很聪明的学习方式","能力圈又往外推了一点点"];
+    return `${pick(lead)}，${pick(tail)}。${Math.random()<0.55?" "+maybeMindsetTail("circle"):""} ${praiseEmojiSoft()}`;
+  }
+  function milestonePraise(count){
+    const intros=[`哇，已经学会 ${count} 个拼写词了`,`第 ${count} 个单词完成，必须认真夸一下`,`十词一关，你已经冲到 ${count} 个了`,`阶段胜利：${count} 个单词进入你的大脑仓库`,`今天的第 ${count} 个拼写词，被你稳稳拿下`,`这不是普通的 ${count}，这是 ${count} 次认真回忆留下的证据`];
+    const classic=["不积跬步，无以至千里；你这十步走得很扎实","长风破浪会有时，你已经把小船划出去很远了","千磨万击还坚劲，你的坚持已经有形状了","少年自有凌云志，十个单词就是一座小山峰","会当凌绝顶，一览众山小；这十个词就是你的台阶"];
+    const wisdom=[
+      "你今天完成的不是几个按钮，而是一次次把‘不会’变成‘会’。这种能力以后会帮你很多次",
+      "学习像复利：今天看起来只是十个词，时间久了就是别人很难一下追上的实力",
+      "真正厉害的人不是从不出错，而是能把错误变成台阶。你刚刚就在这样做",
+      "高手会反过来想：我哪里容易漏？哪里容易混？找到这些地方，进步就会更快",
+      "先把自己能掌握的一小块练熟，能力圈就会慢慢扩大。你今天已经扩大了一点",
+      "你今天留下了十个证据：我能开始、能坚持、能修正、能完成",
+      "每一个拼对的词，都像往未来存了一枚小金币；以后做题时，它们会回来帮你",
+      "你不是靠一口气冲完，而是靠一次一次认真完成。这比一时兴奋更可靠",
+      "这个十词小关卡说明：你不是学不会，你需要的是合适的方法和继续的勇气",
+      "今天的小进步不会大声喊，但它会慢慢变成真正的底气"
+    ];
+    const english=[
+      ["Amazing milestone!","这是一个很棒的阶段胜利！"],["Ten-word hero unlocked!","十词小英雄解锁！"],["Your effort is turning into skill!","你的努力正在变成能力！"],["You are building real spelling power!","你正在建立真正的拼写力！"],["Small steps become big strength!","小步子会变成大力量！"],["You are training your future self!","你正在帮助未来的自己！"]
+    ];
+    const endings=["我真的要给你一个大大的掌声","这不是小事，这是你认真坚持出来的","请记住这种感觉：你是能进步的","今天的大脑训练非常有价值","下一组不用急，我们稳稳来","你不是在硬扛，你是在变强","你已经给自己攒下了一次很好的成功体验"];
+    const e=pick(english);
+    const styles=[
+      `${pick(intros)}！${pick(classic)}。${pick(wisdom)}。${pick(endings)}。`,
+      `${pick(intros)}！${pick(wisdom)}。${pick(endings)}。`,
+      `${pick(intros)}！${e[0]}｜${e[1]} ${pick(wisdom)}。`,
+      `${pick(intros)}！这 ${count%100||count} 个词不是简单数字，是你一次次张口、一次次修正、一次次坚持留下的证据。${pick(wisdom)}。`
+    ];
+    return pick(styles)+" 🏆🎉🌟👏🌱🧠";
+  }
+
   function init(){populateSelects();bindEvents();const restored=restoreActiveSession();if(!restored)renderStart();updateStats();window.addEventListener("beforeunload",()=>{saveState();saveSessionSnapshot();});document.addEventListener("visibilitychange",()=>{if(document.hidden){saveState();saveSessionSnapshot();}});saveState();}
   init();
 })();
