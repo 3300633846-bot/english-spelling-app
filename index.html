@@ -1170,9 +1170,18 @@
       // 4. 中文意思
       add(en, "en-US", enVoice, 0.72, 1);
 
+      // iPad Safari 直接朗读 "A" 有时会把它当成单词/冠词。
+      // 使用标准字母名称，避免出现 "a apple / b ..." 之类前缀。
+      const letterNames={
+        A:"ay",B:"bee",C:"see",D:"dee",E:"ee",F:"ef",G:"gee",
+        H:"aitch",I:"eye",J:"jay",K:"kay",L:"el",M:"em",
+        N:"en",O:"oh",P:"pee",Q:"cue",R:"ar",S:"ess",
+        T:"tee",U:"you",V:"vee",W:"double you",X:"ex",
+        Y:"why",Z:"zee"
+      };
       const letters = en.replace(/[^A-Za-z]/g, "").toUpperCase().split("");
       letters.forEach(letter=>{
-        add(letter, "en-US", enVoice, 0.55, 1);
+        add(letterNames[letter]||letter, "en-US", enVoice, 0.55, 1);
       });
 
       add(en, "en-US", enVoice, 0.72, 1);
@@ -1196,7 +1205,7 @@
     const zh=escapeHtml(t.word.zh||"");
     return `<div class="praise-word-focus"><span class="en">${en}</span><span class="zh">${zh}</span></div>`;
   }
-  function showPraiseOverlay(text,big=false){text=personalize(text);if(state.settings.quietMode||!els.studyCard||!text)return null;clearPraiseOverlay();const div=document.createElement("div");div.className="praise-pop"+(big?" big":"");div.setAttribute("role","button");div.setAttribute("aria-label","点击继续下一个单词");const nextTip="点一下继续下一个，或等 15 秒自动继续 ✨";const wordFocusHtml=renderPraiseWordFocus();const spiritHtml=renderSpiritEventCard(session.lastSpiritEvent);div.innerHTML=`<div class="emoji">${big?"🏆🎉⭐":"🌟✨"}</div><b>${escapeHtml(text)}</b>${wordFocusHtml}<div class="praise-audio-tip">🔊 iPad Safari自然朗读：单词 → 拼写 → 单词强化两遍 → 中文意思</div>${spiritHtml}<div class="tap-next">${nextTip}</div>`;div.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(window.__praiseContinue)window.__praiseContinue();});els.studyCard.appendChild(div);speakPraiseReview();return div;}
+  function showPraiseOverlay(text,big=false){text=personalize(text);if(state.settings.quietMode||!els.studyCard||!text)return null;clearPraiseOverlay();const div=document.createElement("div");div.className="praise-pop"+(big?" big":"");div.setAttribute("role","button");div.setAttribute("aria-label","点击继续下一个单词");const nextTip="点一下继续下一个，或等 15 秒自动继续 ✨";const wordFocusHtml=renderPraiseWordFocus();const spiritHtml=renderSpiritEventCard(session.lastSpiritEvent);div.innerHTML=`<div class="emoji">${big?"🏆🎉⭐":"🌟✨"}</div><b>${escapeHtml(text)}</b>${wordFocusHtml}<div class="praise-audio-tip">🔊 iPad Safari自然朗读：单词 → 字母名称拼写 → 单词强化两遍 → 中文意思</div>${spiritHtml}<div class="tap-next">${nextTip}</div>`;div.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(window.__praiseContinue)window.__praiseContinue();});els.studyCard.appendChild(div);speakPraiseReview();return div;}
   function scheduleNextAfterPraise(big=false){session.pendingAdvance=true;saveSessionSnapshot();let moved=false;const go=()=>{if(moved)return;moved=true;try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){}session.pendingAdvance=false;window.__praiseContinue=null;clearPraiseOverlay();nextTask();};window.__praiseContinue=go;praiseAdvanceTimer=setTimeout(go,15000);}
   function praiseAfterSpelling(t){const line=praiseLine(t);const milestone=maybeTenWordPraise();const text=milestone||line;showFeedback(text,"good");showPraiseOverlay(text,!!milestone);return !!milestone;}
   function recordVoiceSpellWrong(word,t,heard){const p=getProgress(word.id);p.voiceSpellWrong=(p.voiceSpellWrong||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.wrong=(p.wrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);t.voiceSpellWrongCount=(t.voiceSpellWrongCount||0)+1;recordHistory(false,word.id,"zhSpell",0,t);saveState();updateStats();}
