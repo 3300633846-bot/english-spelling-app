@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#7c5cff">
-<!-- v24: spelling mode first/default, missing mode second -->
-<title>星愿犬与失落的1013个单词</title>
+<!-- v42: removed Chinese voice spelling mode; spelling first/default, missing second -->
+<title>星愿犬单词营地 v42：取消汉语语音拼英文</title>
 <style>
   :root{
     --bg1:#fff7ed;--bg2:#eef8ff;--card:rgba(255,255,255,.88);--text:#172033;--muted:#687085;
@@ -335,11 +335,6 @@
 }
 
 
-/* v40: 星愿犬故事背景设定 */
-a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:center;justify-content:center}.story-card{margin-top:18px;padding:0;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(244,247,255,.88));border:1px solid rgba(255,255,255,.86);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(18px)}
-.story-card details{padding:0}.story-card summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;font-weight:1000;color:#1f2440;background:radial-gradient(circle at 8% 0%,rgba(255,196,87,.34),transparent 14rem),radial-gradient(circle at 95% 0%,rgba(124,92,255,.18),transparent 16rem)}.story-card summary::-webkit-details-marker{display:none}.story-card summary .story-title{font-size:18px;line-height:1.25;letter-spacing:-.02em}.story-card summary .story-open{font-size:12px;color:var(--muted);font-weight:900;white-space:nowrap;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 10px}.story-card[open],.story-card details[open]{scroll-margin-top:14px}.story-body{padding:18px 20px 22px;border-top:1px solid rgba(23,32,51,.08)}.story-hero{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;align-items:stretch;margin-bottom:15px}.story-hero-main{border-radius:24px;padding:18px;background:linear-gradient(135deg,rgba(124,92,255,.12),rgba(255,184,77,.16));border:1px solid rgba(124,92,255,.14)}.story-hero-main h2{margin:0 0 8px;font-size:22px;letter-spacing:-.03em}.story-hero-main p{margin:0;color:#4b5563;line-height:1.65;font-weight:800}.story-mission{display:grid;gap:10px}.story-chip{border-radius:20px;border:1px solid var(--line);background:#fff;padding:12px;font-size:13px;line-height:1.5;font-weight:850;color:#344054}.story-chip b{color:#6d4df2}.story-content{border-radius:24px;background:#fff;border:1px solid var(--line);padding:18px}.story-content h3{margin:0 0 12px;font-size:18px}.story-content p{margin:0 0 12px;line-height:1.82;color:#344054;font-size:14px}.story-content p:last-child{margin-bottom:0}.story-quote{margin-top:14px;padding:15px;border-left:5px solid var(--primary);background:#f5f3ff;border-radius:18px;color:#312e81;font-weight:900;line-height:1.75}.story-mini-rules{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.story-mini-rule{padding:12px;border-radius:18px;background:#fffaf0;border:1px solid rgba(245,158,11,.20);font-size:13px;font-weight:900;color:#7c4a03;line-height:1.45}.story-side-link{margin-top:10px}@media (max-width:760px){.story-card{margin-top:14px;border-radius:22px}.story-card summary{padding:15px}.story-card summary .story-title{font-size:16px}.story-card summary .story-open{font-size:11px;padding:6px 8px}.story-body{padding:14px}.story-hero{grid-template-columns:1fr}.story-content{padding:15px}.story-mini-rules{grid-template-columns:1fr}.mobile-story-link{min-height:42px}.top-actions .story-pill{display:none}}
-
-
 /* v36 Safari iPad voice optimization */
 .safari-voice-tip{
   font-size:12px;
@@ -349,23 +344,159 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
   margin-top:8px;
 }
 
+
+/* v40: 《星愿犬与失落的1013个单词》故事背景 */
+.story-card{
+  text-align:left;
+  width:min(820px,100%);
+  margin:0 auto;
+  padding:22px;
+  border-radius:28px;
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(244,241,255,.86));
+  border:1px solid rgba(124,92,255,.18);
+  box-shadow:0 18px 42px rgba(39,52,99,.13);
+}
+.story-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:#f1edff;
+  color:#4b37b4;
+  font-size:12px;
+  font-weight:1000;
+  border:1px solid rgba(124,92,255,.22);
+}
+.story-title{
+  font-size:clamp(28px,5vw,50px);
+  line-height:1.05;
+  letter-spacing:-.05em;
+  margin:14px 0 8px;
+  font-weight:1000;
+  color:#172033;
+}
+.story-subtitle{
+  font-size:18px;
+  font-weight:1000;
+  color:#5b42dc;
+  margin:0 0 16px;
+}
+.story-scroll{
+  max-height:min(58vh,560px);
+  overflow:auto;
+  padding:14px 14px 8px;
+  border-radius:22px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(230,235,245,.95);
+  line-height:1.78;
+  color:#343b52;
+  font-size:15.5px;
+}
+.story-scroll p{margin:0 0 13px}.story-scroll b{color:#172033}.story-quote{
+  margin:14px 0 4px!important;
+  padding:14px 15px;
+  border-radius:18px;
+  background:#fff7e6;
+  border:1px solid rgba(245,158,11,.26);
+  color:#7c4700;
+  font-weight:900;
+}
+.story-actions{
+  display:grid;
+  grid-template-columns:1.2fr 1fr 1fr;
+  gap:10px;
+  margin-top:16px;
+}
+.story-rule-strip{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+.story-rule-strip div{
+  padding:11px 12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.75);
+  border:1px solid rgba(230,235,245,.95);
+  font-size:13px;
+  font-weight:900;
+  color:#4b5563;
+}
+.story-rule-strip b{display:block;color:#172033;font-size:18px;margin-bottom:3px}
+@media(max-width:860px){
+  .mobile-quick-panel{grid-template-columns:1.15fr .85fr .9fr .85fr!important}
+  .story-card{padding:15px;border-radius:22px}
+  .story-scroll{max-height:52vh;font-size:14px;line-height:1.68;padding:12px}
+  .story-actions,.story-rule-strip{grid-template-columns:1fr}
+  .story-subtitle{font-size:15px}
+}
+@media(max-width:520px){
+  .mobile-quick-panel{grid-template-columns:1fr 1fr 1fr 1fr!important}
+  .mobile-quick-panel .btn{font-size:12px!important;padding:8px 4px!important}
+}
+
+
+/* v41: ADHD友好星愿剧情系统：短剧情、可跳过、存入故事书 */
+.story-pop{
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(244,241,255,.96))!important;
+  border:1px solid rgba(124,92,255,.22)!important;
+  box-shadow:0 20px 55px rgba(39,52,99,.22)!important;
+  text-align:left!important;
+  max-height:min(78vh,640px);
+  overflow:auto;
+}
+.story-pop .story-mini-kicker{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 11px;border-radius:999px;
+  background:#f1edff;color:#4b37b4;
+  font-size:12px;font-weight:1000;
+  border:1px solid rgba(124,92,255,.2);
+}
+.story-pop .story-mini-title{
+  margin:12px 0 8px;
+  color:#172033;
+  font-size:clamp(24px,4.5vw,38px);
+  letter-spacing:-.04em;
+  line-height:1.08;
+  font-weight:1000;
+}
+.story-pop .story-mini-body{
+  color:#3f465b;
+  line-height:1.78;
+  font-size:16px;
+  font-weight:760;
+  background:rgba(255,255,255,.74);
+  border:1px solid rgba(230,235,245,.92);
+  border-radius:22px;
+  padding:14px 15px;
+  margin-top:10px;
+}
+.story-pop .story-mini-body p{margin:0 0 10px}.story-pop .story-mini-body p:last-child{margin-bottom:0}
+.story-pop .story-mini-body b{color:#172033}.story-pop .story-mini-body .quote{color:#6d3f00;background:#fff7e6;border-radius:16px;padding:10px 12px;border:1px solid rgba(245,158,11,.25)}
+.story-pop .story-actions-row{display:grid;grid-template-columns:1.25fr 1fr;gap:10px;margin-top:14px}
+.story-pop .story-save-tip{margin-top:10px;color:#6b7280;font-size:12px;font-weight:850;text-align:center}
+.story-book-list{display:grid;gap:12px;width:min(880px,100%);margin:16px auto 0;text-align:left}.story-book-item{padding:16px;border-radius:22px;background:rgba(255,255,255,.82);border:1px solid rgba(230,235,245,.95);box-shadow:0 10px 24px rgba(39,52,99,.08)}.story-book-item h3{margin:0 0 6px;font-size:20px;letter-spacing:-.03em}.story-book-item .meta{font-size:12px;color:#6b7280;font-weight:900;margin-bottom:8px}.story-book-item p{margin:0 0 8px;color:#4b5563;line-height:1.65;font-weight:760}.story-progress-box{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px auto;width:min(880px,100%)}.story-progress-box div{border-radius:18px;background:rgba(255,255,255,.82);border:1px solid rgba(230,235,245,.95);padding:12px;text-align:center;font-weight:900;color:#4b5563}.story-progress-box b{display:block;color:#172033;font-size:24px;margin-bottom:3px}
+@media(max-width:760px){.story-pop{width:min(94vw,760px)!important;padding:16px!important}.story-pop .story-mini-body{font-size:14px;line-height:1.66}.story-pop .story-actions-row{grid-template-columns:1fr}.story-progress-box{grid-template-columns:1fr 1fr}.story-book-item{padding:13px}.story-book-item h3{font-size:17px}}
+
 </style>
 </head>
 <body>
 <div class="app" id="appRoot">
   <header>
-    <div class="brand"><div class="logo">✍️</div><div><h1>星愿犬与失落的1013个单词</h1><div class="sub">拼对星愿单词 · 召唤49个精灵 · 帮助旺财找回记忆</div></div></div>
-    <div class="top-actions"><a class="pill story-pill" href="#storyCard">📖 故事背景</a><button class="pill" id="quickSpeak">🔊 测试发音</button><button class="pill" id="focusModeBtn">🧘 专注模式</button></div>
+    <div class="brand"><div class="logo">🌟</div><div><h1>星愿犬与失落的1013个单词</h1><div class="sub">拼对单词 · 唤醒精灵 · 帮助旺财找回记忆</div></div></div>
+    <div class="top-actions"><button class="pill" data-action="openStory">📖 故事背景</button><button class="pill" data-action="openStoryBook">📚 星愿故事书</button><button class="pill" id="quickSpeak">🔊 测试发音</button><button class="pill" id="focusModeBtn">🧘 专注模式</button></div>
   </header>
   <div class="mobile-quick-panel" aria-label="手机快捷入口">
     <button class="btn primary" data-action="startCurrentMode">🚀 今日训练</button>
     <button class="btn ghost" data-action="changePlayerName">👤 改名字</button>
-    <button class="btn good" data-action="openSpiritDexCaptured">🧚 已收服</button><a class="btn ghost mobile-story-link" href="#storyCard">📖 故事</a>
+    <button class="btn good" data-action="openSpiritDexCaptured">🧚 已收服</button>
+    <button class="btn ghost" data-action="openStoryBook">📚 故事书</button>
   </div>
   <div class="layout">
     <aside class="panel" id="settingsPanel">
       <h2>家长设置</h2>
-      <div class="field"><label>今天练习模式</label><div class="mode-tabs"><button class="mode-tab" data-set-mode="spelling">拼写专项</button><button class="mode-tab" data-set-mode="missing">防漏字拼写</button><button class="mode-tab" data-set-mode="zhSpell">汉语语音拼英文</button><button class="mode-tab" data-set-mode="missed">Boss/待收服词列表</button><button class="mode-tab" data-set-mode="mixed">全流程</button><button class="mode-tab" data-set-mode="meaning">认意思</button><button class="mode-tab" data-set-mode="voice">朗读检测</button></div></div>
+      <div class="field"><label>今天练习模式</label><div class="mode-tabs"><button class="mode-tab" data-set-mode="spelling">拼写专项</button><button class="mode-tab" data-set-mode="missing">防漏字拼写</button><button class="mode-tab" data-set-mode="missed">Boss/待收服词列表</button><button class="mode-tab" data-set-mode="mixed">全流程</button><button class="mode-tab" data-set-mode="meaning">认意思</button><button class="mode-tab" data-set-mode="voice">朗读检测</button></div></div>
       <div class="field"><label for="gradeSelect">选择年级</label><select id="gradeSelect"></select></div>
       <div class="field"><label for="groupSelect">选择册</label><select id="groupSelect"></select></div>
       <div class="field"><label for="unitSelect">选择 Unit</label><select id="unitSelect"></select></div>
@@ -381,50 +512,15 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
       <button class="btn primary row" id="startSpellingSide">开始今日练习</button>
       <button class="btn ghost row" id="saveSettings">保存设置</button>
       <button class="btn ghost row" id="changePlayerName" type="button">👤 修改训练师名字</button>
-      <a class="btn ghost row story-side-link" href="#storyCard">📖 查看故事背景</a>
       <button class="btn good row dex-side-btn" id="sideSpiritDex" data-action="openSpiritDexCaptured">🧚 已收服精灵图鉴</button>
+      <button class="btn ghost row" data-action="openStory" type="button">📖 查看故事背景</button>
+      <button class="btn ghost row" data-action="openStoryBook" type="button">📚 星愿故事书</button>
       <div class="stats" id="statsBox"></div>
       <p class="tiny">语音拼写规则：看汉语后，每次只读一个英文字母，系统逐格填入后判断。机器听错时可以退一格或点字母修正；点“显示完整单词”会自动变成 Boss/待收服词并统计次数。语音功能需要浏览器允许麦克风。朗读发音已设为“江苏考试训练模式”：优先使用 en-US 标准美式英语声音；如果设备没有美式声音，会自动退回可用英语声音。</p>
       <div class="footer-actions"><button class="btn ghost" id="exportProgress">导出进度</button><button class="btn warn" id="resetProgress">清空进度</button></div>
     </aside>
     <main class="main">
       <section class="study-card" id="studyCard"><div class="progress-wrap"><div class="bar"><div id="barFill"></div></div><div class="progress-text" id="progressText">0/0</div></div><div id="cardContent"></div></section>
-
-      <section class="story-card" id="storyCard">
-        <details>
-          <summary><span class="story-title">📖 《星愿犬与失落的1013个单词》故事背景</span><span class="story-open">点开 / 收起</span></summary>
-          <div class="story-body">
-            <div class="story-hero">
-              <div class="story-hero-main">
-                <h2>序幕：星愿君主的陨落与守护者的誓言</h2>
-                <p>1013个星愿单词散落人间，化为49个沉睡精灵。每拼对一个单词，就能唤醒一束语言之光；每坚持一次，就离旺财找回记忆更近一步。</p>
-              </div>
-              <div class="story-mission">
-                <div class="story-chip">🌟 <b>你的身份：</b>被星愿宝珠选中的单词训练师。</div>
-                <div class="story-chip">🧚 <b>你的任务：</b>拼对单词，召唤并升级49个精灵。</div>
-                <div class="story-chip">🐶 <b>旺财的秘密：</b>它不是坏狗，只是被混沌碎片弄丢了使命。</div>
-              </div>
-            </div>
-            <div class="story-content">
-              <h3>完整序幕</h3>
-              <p>在宇宙诞生之初，第一缕愿望之光凝聚成了一位神圣的存在——星愿君主 Astraelis。她创造了无数精灵，散布在“认知之海”的各个角落，用以守护世间一切知识的火花。</p>
-              <p>而在所有的知识中，Astraelis 最珍视的，是能够连接心灵与心灵的力量——语言。</p>
-              <p>为了让人类的孩子们能够跨越隔阂、彼此理解，Astraelis 派遣了自己最忠诚的伙伴——学习守护犬·旺财——带着1013个蕴含语言魔力的“星愿单词”降临人间。旺财的任务，是陪伴每一个学习英语的孩子，在他们拼对单词时，将对应的精灵召唤到他们身边，让学习变成一场充满惊喜的冒险。</p>
-              <p>然而，虚无语界的黑暗力量却对此感到恐惧。它们惧怕人类因语言相通而变得强大，于是趁旺财穿越认知之海时发动了突袭。</p>
-              <p>那一战，旺财为了保护怀中的1013个单词种子，用身体挡下了黑暗之王——涵老魔——的致命一击。单词种子散落人间，而旺财被“混沌碎片”击中头部，永远失去了关于自己使命的全部记忆。</p>
-              <p>忘记了自己是谁，忘记了自己为何而来，甚至忘记了星空之上那位温柔注视着他的君主。被混沌侵蚀的旺财，只剩下一种本能——破坏语言秩序。他变成了一个调皮捣蛋、专门干扰学习的小恶魔。每当有孩子拼错单词，他就会出现在他们身边，用尽各种办法捣蛋：打翻墨水瓶、放出吵闹的噪音、用幻影遮住单词本……仿佛拼错的单词是他快乐的源泉。</p>
-              <p>而散落人间的1013个单词种子，化为了49个精灵，沉睡在“单词迷宫”的深处。只有最纯净的学习愿望——也就是孩子们拼读单词的声音——才能唤醒它们，将它们带回现实世界。</p>
-              <p>Astraelis 俯瞰着这一切，在星光中流下一滴眼泪。那颗眼泪化作一颗星愿宝珠，坠入人间，选中了一位最平凡却又最特别的……你。</p>
-              <div class="story-quote">“孩子，请帮助旺财找回他的记忆。用你拼对的每一个单词，召唤我的精灵；用你每一次的坚持，驱散混沌的迷雾。让旺财记起他是谁，让他回家。”</div>
-              <div class="story-mini-rules">
-                <div class="story-mini-rule">拼对单词 = 唤醒星愿精灵</div>
-                <div class="story-mini-rule">拼错单词 = 旺财被混沌带偏，出来捣乱</div>
-                <div class="story-mini-rule">坚持复习 = 驱散迷雾，帮助旺财回家</div>
-              </div>
-            </div>
-          </div>
-        </details>
-      </section>
       <section class="summary-card" id="summaryCard"><h2>今日拼写复盘</h2><div id="todaySummary" class="tiny">还没开始。完成一轮后，这里会显示今日拼写表现和需要复习的词。</div><div class="word-list" id="reviewList"></div></section>
     </main>
   </div>
@@ -480,7 +576,7 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
       merged.settings.selectedWordIds=merged.settings.selectedWordIds.map(String);
       merged.settings.useCustomWords=!!merged.settings.useCustomWords;
       // v24 起练习模式默认改为“拼写专项”。从旧版迁移且仍停留在旧默认“汉语语音拼英文”时，自动切到拼写专项；用户之后手动选择的模式会继续记忆。
-      if(!currentRaw && merged.settings.mode==="zhSpell") merged.settings.mode="spelling";
+      if(merged.settings.mode==="zhSpell") merged.settings.mode="spelling";
       // v23 起惩罚模式默认打开：迁移旧版时自动打开；用户在 v23 中手动关闭后仍会被记住。
       merged.settings.punishmentMode=currentRaw ? !!merged.settings.punishmentMode : true;
       return merged;
@@ -515,7 +611,7 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
     ["done","correct","wrong","stars","combo","bestCombo"].forEach(k=>s[k]=Number(data[k])||0);
     s.locked=!!data.locked;
     ["practicedIds","spellIds","meaningIds","readIds","voiceIds","hintIds","revealedIds","milestonesShown"].forEach(k=>s[k]=arrayToSet(data[k]));s.spiritEvents=Array.isArray(data.spiritEvents)?data.spiritEvents:[];
-    const cur={...data.current,word:currentWord};delete cur.wordId;s.current=cur;session=s;
+    const cur={...data.current,word:currentWord};delete cur.wordId;if(cur.mode==="zhSpell")cur.mode="spell";s.current=cur;session=s;
     if(session.pendingAdvance){session.pendingAdvance=false;nextTask();return true;}
     renderTask(session.current);updateProgressBar();saveSessionSnapshot();return true;
   }
@@ -646,7 +742,7 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
   function attachLetterGrammar(rec){try{const G=window.SpeechGrammarList||window.webkitSpeechGrammarList;if(!G)return;const list=new G();list.addFromString('#JSGF V1.0; grammar letters; public <letter> = a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | double;',1);rec.grammars=list;}catch(e){}}
   function primaryAnswer(en){return answerVariants(en)[0] || String(en||"");}
   function isSpellingCorrect(input,en){const value=compactEnglish(input);if(!value)return false;return answerVariants(en).some(v=>compactEnglish(v)===value);}
-  function isSpellLikeMode(mode){return ["spell","zhSpell","missing"].includes(mode);}
+  function isSpellLikeMode(mode){return ["spell","missing"].includes(mode);}
   function isPlainLetter(ch){return /[A-Za-z0-9]/.test(ch);}
   function letterSlots(en){const ans=primaryAnswer(en);return [...ans].map((ch,i)=>({ch,i})).filter(x=>isPlainLetter(x.ch));}
   function dangerNotes(en){const ans=primaryAnswer(en);const low=ans.toLowerCase();const notes=[];if(/([a-z])\1/.test(low))notes.push("双写字母");if(/[bdpq]/.test(low))notes.push("b/d/p/q 方向字母");if(/[mnuw]/.test(low))notes.push("m/n/u/w 易看错字母");if(/ie|ei|ea|ee|ou|ow|oa|oo/.test(low))notes.push("常见字母组合");if(/[aeiou].*[aeiou]/.test(low))notes.push("多个元音，容易漏");return notes.length?notes.join(" · "):"注意字母顺序，不要漏中间字母";}
@@ -716,7 +812,7 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
   function getProgress(wordId){if(!state.progress[wordId])state.progress[wordId]={stage:0,spellStage:0,due:todayStr(),correct:0,wrong:0,spellCorrect:0,spellWrong:0,hints:0,reveals:0,noSpell:0,missingCorrect:0,missingWrong:0,lastSeen:null};const p=state.progress[wordId];if(p.spellStage==null)p.spellStage=p.stage||0;if(p.spellCorrect==null)p.spellCorrect=0;if(p.spellWrong==null)p.spellWrong=0;if(p.hints==null)p.hints=0;if(p.reveals==null)p.reveals=0;if(p.noSpell==null)p.noSpell=0;if(p.missingCorrect==null)p.missingCorrect=0;if(p.missingWrong==null)p.missingWrong=0;return p;}
   function existingProgress(wordId){return state.progress[wordId]||null;}
   function intervalForSpellStage(stage){if(stage<=1)return 0;if(stage===2)return 1;if(stage===3)return 2;if(stage===4)return 3;if(stage===5)return 7;if(stage===6)return 14;if(stage===7)return 21;if(stage===8)return 30;return 45;}
-  function modeName(mode){return {zhSpell:"汉语语音拼英文",missing:"防漏字拼写",spelling:"拼写专项",missed:"Boss/待收服词列表",mixed:"全流程",meaning:"认意思",voice:"朗读检测",read:"会读",speakCheck:"朗读检测",spell:"拼写",enToZh:"英文→中文",zhToEn:"中文→英文"}[mode]||mode;}
+  function modeName(mode){return {missing:"防漏字拼写",spelling:"拼写专项",missed:"Boss/待收服词列表",mixed:"全流程",meaning:"认意思",voice:"朗读检测",read:"会读",speakCheck:"朗读检测",spell:"拼写",enToZh:"英文→中文",zhToEn:"中文→英文"}[mode]||mode;}
 
 
   const RARITY_INFO={common:{label:"普通",icon:"🌱",cls:"rarity-common",weight:1},rare:{label:"稀有",icon:"💎",cls:"rarity-rare",weight:2},epic:{label:"史诗",icon:"🔮",cls:"rarity-epic",weight:3},legendary:{label:"传说",icon:"👑",cls:"rarity-legendary",weight:4},mythic:{label:"神话",icon:"🌟",cls:"rarity-mythic",weight:5}};
@@ -852,7 +948,7 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
     showToastOnCard("已开启新一批单词，不重复刚才那一轮。");
     nextTask();
   }
-  function nextTask(){clearPunishmentOverlay();session.pendingAdvance=false;session.locked=false;if(!session.queue.length||session.done>=(Number(state.settings.sessionSize)||12)){renderDone();return}const word=session.queue.shift();session.current={word,mode:taskModeFor(word),hintLevel:0,fullReveal:false,wasWrong:false,attempts:0};renderTask(session.current);updateProgressBar();saveSessionSnapshot();if(state.settings.autoSpeak && ["spell","read","enToZh"].includes(session.current.mode))setTimeout(()=>speak(word),260);}
+  function nextTask(){clearPunishmentOverlay();clearStoryOverlay();session.pendingAdvance=false;session.locked=false;if(!session.queue.length||session.done>=(Number(state.settings.sessionSize)||12)){renderDone();return}const word=session.queue.shift();session.current={word,mode:taskModeFor(word),hintLevel:0,fullReveal:false,wasWrong:false,attempts:0};renderTask(session.current);updateProgressBar();saveSessionSnapshot();if(state.settings.autoSpeak && ["spell","read","enToZh"].includes(session.current.mode))setTimeout(()=>speak(word),260);}
 
   function renderTask(task){
     const {word,mode}=task; const p=getProgress(word.id); const safeEn=escapeHtml(word.en); const safeZh=escapeHtml(word.zh); const stars="⭐".repeat(Math.min(5,session.combo));
@@ -1248,10 +1344,10 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
     return `<div class="praise-word-focus"><span class="en">${en}</span><span class="zh">${zh}</span></div>`;
   }
   function showPraiseOverlay(text,big=false){text=personalize(text);if(state.settings.quietMode||!els.studyCard||!text)return null;clearPraiseOverlay();const div=document.createElement("div");div.className="praise-pop"+(big?" big":"");div.setAttribute("role","button");div.setAttribute("aria-label","点击继续下一个单词");const nextTip="点一下继续下一个，或等 15 秒自动继续 ✨";const wordFocusHtml=renderPraiseWordFocus();const spiritHtml=renderSpiritEventCard(session.lastSpiritEvent);div.innerHTML=`<div class="emoji">${big?"🏆🎉⭐":"🌟✨"}</div><b>${escapeHtml(text)}</b>${wordFocusHtml}<div class="praise-audio-tip">🔊 iPad Safari自然朗读：单词 → 字母名称拼写 → 单词强化两遍 → 中文意思</div>${spiritHtml}<div class="tap-next">${nextTip}</div>`;div.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(window.__praiseContinue)window.__praiseContinue();});els.studyCard.appendChild(div);speakPraiseReview();return div;}
-  function scheduleNextAfterPraise(big=false){session.pendingAdvance=true;saveSessionSnapshot();let moved=false;const go=()=>{if(moved)return;moved=true;try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){}session.pendingAdvance=false;window.__praiseContinue=null;clearPraiseOverlay();nextTask();};window.__praiseContinue=go;praiseAdvanceTimer=setTimeout(go,15000);}
+  function scheduleNextAfterPraise(big=false){session.pendingAdvance=true;saveSessionSnapshot();let moved=false;const go=()=>{if(moved)return;moved=true;try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){}session.pendingAdvance=false;window.__praiseContinue=null;clearPraiseOverlay();runPendingStoryThenNext();};window.__praiseContinue=go;praiseAdvanceTimer=setTimeout(go,15000);}
   function praiseAfterSpelling(t){const line=praiseLine(t);const milestone=maybeTenWordPraise();const text=milestone||line;showFeedback(text,"good");showPraiseOverlay(text,!!milestone);return !!milestone;}
-  function recordVoiceSpellWrong(word,t,heard){const p=getProgress(word.id);p.voiceSpellWrong=(p.voiceSpellWrong||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.wrong=(p.wrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);t.voiceSpellWrongCount=(t.voiceSpellWrongCount||0)+1;recordHistory(false,word.id,"zhSpell",0,t);saveState();updateStats();}
-    function markCannotSpell(word,t,reason="reveal"){if(!t||t.noSpellMarked)return;t.noSpellMarked=true;t.fullReveal=true;session.revealedIds.add(word.id);session.combo=0;const p=getProgress(word.id);p.noSpell=(p.noSpell||0)+1;p.reveals=(p.reveals||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.wrong=(p.wrong||0)+1;if(t.mode==="missing")p.missingWrong=(p.missingWrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.practicedIds.add(word.id);recordHistory(false,word.id,t.mode,0,t);saveState();updateStats();}
+  function recordVoiceSpellWrong(word,t,heard){const p=getProgress(word.id);p.voiceSpellWrong=(p.voiceSpellWrong||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.wrong=(p.wrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);t.voiceSpellWrongCount=(t.voiceSpellWrongCount||0)+1;recordHistory(false,word.id,"zhSpell",0,t);maybeAfterWrongStory(word,t,p);saveState();updateStats();}
+    function markCannotSpell(word,t,reason="reveal"){if(!t||t.noSpellMarked)return;t.noSpellMarked=true;t.fullReveal=true;session.revealedIds.add(word.id);session.combo=0;const p=getProgress(word.id);p.noSpell=(p.noSpell||0)+1;p.reveals=(p.reveals||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.wrong=(p.wrong||0)+1;if(t.mode==="missing")p.missingWrong=(p.missingWrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.practicedIds.add(word.id);recordHistory(false,word.id,t.mode,0,t);maybeAfterWrongStory(word,t,p);saveState();updateStats();}
   function checkSpelling(){
     if(session.locked||!session.current)return;const input=$("spellInput");const value=input?input.value:"";const t=session.current;const {word}=t;t.attempts++;
     if(isSpellingCorrect(value,word.en)){
@@ -1268,9 +1364,9 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
   }
   function spellGoodMessage(t){if(t.fullReveal)return "看过答案后拼对了，也很棒！这个词明天还会再来。";if(t.hintLevel>0)return "提示后拼对了，继续积累信心！";return randomGood();}
   function handleSpellingCorrect(word,t){
-    const p=getProgress(word.id);let gain=t.fullReveal?1:(t.hintLevel>0?2:3);p.spellCorrect=(p.spellCorrect||0)+1;p.correct=(p.correct||0)+1;p.lastSeen=todayStr();p.spellStage=Math.min(10,(p.spellStage||0)+(t.fullReveal?1:(t.hintLevel>0?1:2)));p.stage=Math.max(p.stage||0,Math.min(4,p.spellStage));p.due=addDays(todayStr(),t.fullReveal?1:intervalForSpellStage(p.spellStage));if(t.hintLevel>0)p.hints=(p.hints||0)+1;if(t.fullReveal&&!t.noSpellMarked)p.reveals=(p.reveals||0)+1;state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=gain;if(t.hintLevel>0)session.hintIds.add(word.id);if(t.fullReveal)session.revealedIds.add(word.id);session.practicedIds.add(word.id);session.spellIds.add(word.id);session.lastSpiritEvent=captureWordSpirit(word,t,p);recordHistory(true,word.id,t.mode||"spell",gain,t);awardBadges();saveState();updateStats();}
-  function handleWrong(word,mode,requeue=true){const p=getProgress(word.id);p.wrong=(p.wrong||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);recordHistory(false,word.id,mode,0,session.current);if(requeue&&session.done+session.queue.length<(Number(state.settings.sessionSize)||12)+4)insertLater(word,2);saveState();updateStats();}
-  function handleGenericCorrect(word,mode){const p=getProgress(word.id);p.correct=(p.correct||0)+1;p.stage=Math.min((p.stage||0)+1,9);p.lastSeen=todayStr();p.due=addDays(todayStr(),Math.max(0,Math.min(3,p.stage-1)));state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=1;session.practicedIds.add(word.id);if(mode==="read")session.readIds.add(word.id);if(mode==="enToZh"||mode==="zhToEn")session.meaningIds.add(word.id);recordHistory(true,word.id,mode,1,session.current);saveState();updateStats();}
+    const p=getProgress(word.id);let gain=t.fullReveal?1:(t.hintLevel>0?2:3);p.spellCorrect=(p.spellCorrect||0)+1;p.correct=(p.correct||0)+1;p.lastSeen=todayStr();p.spellStage=Math.min(10,(p.spellStage||0)+(t.fullReveal?1:(t.hintLevel>0?1:2)));p.stage=Math.max(p.stage||0,Math.min(4,p.spellStage));p.due=addDays(todayStr(),t.fullReveal?1:intervalForSpellStage(p.spellStage));if(t.hintLevel>0)p.hints=(p.hints||0)+1;if(t.fullReveal&&!t.noSpellMarked)p.reveals=(p.reveals||0)+1;state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=gain;if(t.hintLevel>0)session.hintIds.add(word.id);if(t.fullReveal)session.revealedIds.add(word.id);session.practicedIds.add(word.id);session.spellIds.add(word.id);session.lastSpiritEvent=captureWordSpirit(word,t,p);recordHistory(true,word.id,t.mode||"spell",gain,t);maybeAfterCorrectStory(word,t,p);awardBadges();saveState();updateStats();}
+  function handleWrong(word,mode,requeue=true){const p=getProgress(word.id);p.wrong=(p.wrong||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);recordHistory(false,word.id,mode,0,session.current);maybeAfterWrongStory(word,session.current,p);if(requeue&&session.done+session.queue.length<(Number(state.settings.sessionSize)||12)+4)insertLater(word,2);saveState();updateStats();}
+  function handleGenericCorrect(word,mode){const p=getProgress(word.id);p.correct=(p.correct||0)+1;p.stage=Math.min((p.stage||0)+1,9);p.lastSeen=todayStr();p.due=addDays(todayStr(),Math.max(0,Math.min(3,p.stage-1)));state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=1;session.practicedIds.add(word.id);if(mode==="read")session.readIds.add(word.id);if(mode==="enToZh"||mode==="zhToEn")session.meaningIds.add(word.id);recordHistory(true,word.id,mode,1,session.current);maybeAfterCorrectStory(word,session.current,p);saveState();updateStats();}
   function insertLater(word,distance){const pos=Math.min(distance,session.queue.length);session.queue.splice(pos,0,word);}
   function recordHistory(ok,wordId,mode,stars=0,task=null){const t=todayStr();if(!state.history[t])state.history[t]={done:0,correct:0,wrong:0,stars:0,words:{},modes:{},hints:0,reveals:0};const h=state.history[t];h.done++;if(ok)h.correct++;else h.wrong++;h.stars=(h.stars||0)+stars;h.words[wordId]=true;h.modes[mode]=(h.modes[mode]||0)+1;if(task&&task.hintLevel>0&&!task.historyHintCounted){h.hints=(h.hints||0)+1;task.historyHintCounted=true;}if(task&&task.fullReveal&&!task.historyRevealCounted){h.reveals=(h.reveals||0)+1;task.historyRevealCounted=true;}state.lastRunDate=t;state.totalStars=(state.totalStars||0)+stars;}
   function awardBadges(){const h=state.history[todayStr()];if(!h)return;state.badges=state.badges||{};if((h.modes?.spell||0)>=10)state.badges.tenSpell=true;if((h.correct||0)>=10&&h.wrong===0)state.badges.perfectTen=true;if(computeStreak()>=3)state.badges.threeDays=true;if((state.totalStars||0)>=100)state.badges.hundredStars=true;}
@@ -1328,12 +1424,12 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
     rec.onresult=(e)=>{const transcripts=[];for(let i=0;i<e.results.length;i++){for(let j=0;j<e.results[i].length;j++){transcripts.push(e.results[i][j].transcript)}}const heard=transcripts[0]||"";setVoiceUI("我听到的是：",heard,false);const ok=isSpeechCorrect(transcripts,word.en);if(ok){session.locked=true;showFeedback("读对了！开口成功，奖励 2 颗星。","good");handleVoiceCorrect(word,t);session.done++;updateProgressBar();maybeConfetti(12);session.pendingAdvance=true;saveSessionSnapshot();setTimeout(()=>{session.pendingAdvance=false;nextTask();},850);}else{t.wasWrong=true;const reveal=$("answerReveal");if(reveal)reveal.classList.add("show");showFeedback(`我听到的是“${heard||"没听清"}”。没关系，再听考试美式发音后重读一次。`,"bad");if(t.voiceAttempts>=2)maybeWangcaiPunish(word);if(t.voiceAttempts>=2){handleVoiceWrong(word,t,false);}}};
     try{rec.start();}catch(e){setVoiceUI("语音识别没有启动成功，可以再点一次。","再试一次",false);showFeedback("语音识别没有启动成功，可以再点一次。","bad");}
   }
-  function handleVoiceCorrect(word,t){const p=getProgress(word.id);p.readCorrect=(p.readCorrect||0)+1;p.correct=(p.correct||0)+1;p.lastSeen=todayStr();p.readStage=Math.min(10,(p.readStage||0)+1);p.stage=Math.max(p.stage||0,Math.min(3,p.readStage));p.due=addDays(todayStr(),Math.min(3,Math.max(1,p.readStage)));state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=2;session.practicedIds.add(word.id);session.readIds.add(word.id);session.voiceIds.add(word.id);recordHistory(true,word.id,"speakCheck",2,t);awardBadges();saveState();updateStats();}
-  function handleVoiceWrong(word,t,requeue=true){const p=getProgress(word.id);p.readWrong=(p.readWrong||0)+1;p.wrong=(p.wrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);recordHistory(false,word.id,"speakCheck",0,t);if(requeue&&session.done+session.queue.length<(Number(state.settings.sessionSize)||12)+4)insertLater(word,2);saveState();updateStats();}
+  function handleVoiceCorrect(word,t){const p=getProgress(word.id);p.readCorrect=(p.readCorrect||0)+1;p.correct=(p.correct||0)+1;p.lastSeen=todayStr();p.readStage=Math.min(10,(p.readStage||0)+1);p.stage=Math.max(p.stage||0,Math.min(3,p.readStage));p.due=addDays(todayStr(),Math.min(3,Math.max(1,p.readStage)));state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=2;session.practicedIds.add(word.id);session.readIds.add(word.id);session.voiceIds.add(word.id);recordHistory(true,word.id,"speakCheck",2,t);maybeAfterCorrectStory(word,t,p);awardBadges();saveState();updateStats();}
+  function handleVoiceWrong(word,t,requeue=true){const p=getProgress(word.id);p.readWrong=(p.readWrong||0)+1;p.wrong=(p.wrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);recordHistory(false,word.id,"speakCheck",0,t);maybeAfterWrongStory(word,t,p);if(requeue&&session.done+session.queue.length<(Number(state.settings.sessionSize)||12)+4)insertLater(word,2);saveState();updateStats();}
   function revealAnswer(){const t=session.current;if(!t||!isSpellLikeMode(t.mode)||!state.settings.allowReveal)return;t.fullReveal=true;markCannotSpell(t.word,t,"reveal");const reveal=$("answerReveal");if(reveal)reveal.classList.add("show");showFeedback("已记入 Boss/待收服词，并统计 1 次。先看完整单词；一开始填写，答案会自动遮住，防止照抄。","warn");}
   function tryAgain(){const t=session.current;if(!t)return;const reveal=$("answerReveal");const input=$("spellInput");if(reveal)reveal.classList.remove("show");if(input){input.value="";input.focus();}if(t.mode==="zhSpell"){t.voiceBuffer="";updateVoiceSpellDisplay();saveSessionSnapshot();setVoiceUI("答案已经遮住了，从第一个字母重新读。","等待拼写",false);}showFeedback(t.mode==="zhSpell"?"现在遮住了，从第一个字母重新语音拼。":"现在遮住了，再拼一次。","warn");}
   function skipWord(){if(session.locked||!session.current)return;session.locked=true;const {word,mode}=session.current;if(mode==="speakCheck")handleVoiceWrong(word,session.current,true);else handleWrong(word,mode,true);session.done++;updateProgressBar();showFeedback("没关系，这个词等会儿再来一次。","warn");session.pendingAdvance=true;saveSessionSnapshot();setTimeout(()=>{session.pendingAdvance=false;nextTask();},700);}
-  function showHint(){const t=session.current;if(!t||!["spell","zhSpell"].includes(t.mode))return;t.hintLevel=Math.min(2,(t.hintLevel||0)+1);session.hintIds.add(t.word.id);const p=getProgress(t.word.id);p.hints=(p.hints||0)+1;state.progress[t.word.id]=p;saveState();updateHint();showFeedback(t.hintLevel===1?"给你首字母提示。":"再给你首尾字母提示。","warn");}
+  function showHint(){const t=session.current;if(!t||t.mode!=="spell")return;t.hintLevel=Math.min(2,(t.hintLevel||0)+1);session.hintIds.add(t.word.id);const p=getProgress(t.word.id);p.hints=(p.hints||0)+1;state.progress[t.word.id]=p;saveState();updateHint();showFeedback(t.hintLevel===1?"给你首字母提示。":"再给你首尾字母提示。","warn");}
   function slowSpeak(){if(!session.current)return;const word=session.current.word;if(!("speechSynthesis" in window)){showFeedback("这台设备暂时不支持网页朗读。","bad");return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(speakTextFor(word));applyExamVoice(u);u.rate=.48;u.pitch=1.03;window.speechSynthesis.speak(u);}
   function showFeedback(text,type){const fb=$("feedback");if(!fb)return;fb.textContent=personalize(text);fb.className="feedback "+(type||"");}
   function randomGood(){return praiseGeneric();}
@@ -1356,8 +1452,145 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
   function parentPraiseForSession(){const reveal=session.revealedIds?.size||0;const hint=session.hintIds?.size||0;const spell=session.spellIds?.size||0;if(reveal>0)return `我注意到你刚才不是放弃，而是看了答案又遮住重拼。看答案不是失败，能把不会追回来，才是真正会学习。`;if(hint>0)return `我看见你会用提示找线索，然后自己完成拼写。这不是偷懒，这是很聪明的学习方法。`;if(spell>=10)return `你今天收服了 ${spell} 个单词精灵，这说明你能开始、能坚持、能完成。这个能力比单词本身还重要。`;return `我注意到你刚才认真完成了今天的小任务。你不是一下子变强的，你是在一次次继续里变强。`;}
   function chestRewardText(){const count=session.spellIds?.size||0;if(count>=10)return `🎁 大宝箱开启：你获得“十词通关徽章”、${session.stars||0} 颗星星，还有一次家长认真夸奖。`;if(count>=5)return `🧰 小宝箱开启：你完成了 ${count} 个拼写词，单词精灵队伍又扩大了。`;return `🌱 今天的任务完成了，习惯火苗继续亮着。`;}
 
-  function renderDone(allDone=false){clearPunishmentOverlay();session.active=false;session.pendingAdvance=false;clearSessionSnapshot();updateProgressBar();const attempts=session.correct+session.wrong;const accuracy=attempts?Math.round(session.correct/attempts*100):100;const practiced=session.practicedIds.size;const spelling=session.spellIds.size;const voice=session.voiceIds?session.voiceIds.size:0;const hint=session.hintIds.size;const reveal=session.revealedIds.size;let badgeText="";if(session.bestCombo>=5)badgeText+='<span class="badge purple">🔥 连对达人</span>';if(accuracy>=90&&attempts>=8)badgeText+='<span class="badge green">🎯 高正确率</span>';if(session.stars>=25)badgeText+='<span class="badge orange">⭐ 星星收集家</span>';const size=currentMissionSize();els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="badge-row" style="justify-content:center"><span class="badge green">今日地图完成</span><span class="badge orange">本轮 ${session.stars} 星</span><span class="badge purple">正确率 ${accuracy}%</span>${badgeText}</div><div class="start-title">${allDone?"当前范围已通关":"今日单词精灵闯关完成"}</div><p class="start-sub">本轮收服/练习 <b>${practiced}</b> 个词，其中拼写/防漏字 <b>${spelling}</b> 个、朗读检测 <b>${voice}</b> 个；用了提示 ${hint} 个，查看完整答案 ${reveal} 个。看过答案和拼错的词已经变成“Boss/待收服词”，后续会自动回来。</p>${renderQuestMap(size,size)}<div class="chest-card"><b>${chestRewardText()}</b><br>今天不是没完没了地学，而是完成一小段地图，带着“我做到了”的感觉结束。</div>${renderSpiritReportBlock()}<div class="guardian-card"><h3>👨‍👩‍👧 家长夸奖卡</h3><p>今天请家长照着说一句，真实夸具体行为，不只说“真棒”。</p><div class="parent-script">“${parentPraiseForSession()}”</div></div><div class="selector-actions three"><button class="btn primary start-btn" id="moreNewBtn">学习更多的新单词</button><button class="btn good start-btn" id="againBtn">再来一轮拼写</button><button class="btn ghost start-btn" data-set-mode="missed" data-action="startMode">挑战 Boss 词</button></div><div class="quick-grid"><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">继续语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="voice" data-action="startMode">朗读检测</button></div></div></div>`;$('againBtn').addEventListener('click',startSession);$('moreNewBtn').addEventListener('click',startMoreNewWords);renderReviewList();updateStats();maybeConfetti(32);}
-  function renderStart(){updateProgressBar();updateCustomWordsNote();const chosen=selectedWords();const customActive=state.settings.useCustomWords&&customSelectedWords().length>0;const due=countDue(chosen);const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const size=currentMissionSize();const streak=computeStreak();const todayDone=todayDoneCount();const weekWords=weeklyWordCount();const isVoice=state.settings.mode==="voice";const isMissing=state.settings.mode==="missing";const isZh=state.settings.mode==="zhSpell";let intro;if(customActive)intro=`已启用自主选词：本轮只从你勾选的 <b>${chosen.length}</b> 个单词里出题。今天不是“背单词”，是把这些词一个个收服。`;else if(isVoice)intro=`今天是朗读关：出现英文后读出来。读错不惩罚，听考试美式发音后再试。`;else if(isMissing)intro=`今天是防漏字关：专抓漏字、乱序和 b/d/p/q 这类方向难点。每发现一个漏洞，都是升级。`;else if(isZh)intro=`今天是核心关：看汉语，用语音逐字母拼英文。规则很简单：拼对才捕捉精灵；拼错旺财会捣乱，但这个词会变成 Boss，等你重新收服。`;else intro=`今天会优先安排：待复习 <b>${due}</b> 个、Boss 词 <b>${weak}</b> 个、待收服词 <b>${noSpell}</b> 个。`;els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="streak-row"><span class="streak-pill"><span class="flame">🔥</span>习惯火苗 ${streak} 天</span><span class="streak-pill">🛟 本周复活卡 1 张</span><span class="streak-pill">📅 本周收服 ${weekWords} 词</span></div><div class="badge-row" style="justify-content:center"><span class="badge">${customActive?"自选词":escapeHtml(rangeLabel())}</span><span class="badge green">${chosen.length} 个词</span><span class="badge purple">${modeName(state.settings.mode)}</span><span class="no-spell-badge">Boss/待收服 ${noSpell}</span></div><div class="mission-title">今日任务：收服 ${size} 个单词精灵</div><p class="start-sub">${intro}</p>${renderSpiritCampStrip()}${renderQuestMap(todayDone%Math.max(1,size),size)}<div class="game-banner"><b>星愿任务：</b>1013个星愿单词散落人间，化为49个沉睡精灵。拼对一个词，才会捕捉或升级一只单词精灵；拼错时旺财会被混沌带偏出来捣乱，这个词会变成 Boss，等你下次打败它。完成后就结束，不搞无限刷。</div><button class="btn primary start-btn" id="startMain">🚀 开始今日挑战</button><div class="game-mini"><button class="btn ghost" data-action="startSize" data-size="5">🌱 轻松 5 词<br><span class="soft-note">状态一般也算完成</span></button><button class="btn ghost" data-action="startSize" data-size="10">🎯 正常 10 词<br><span class="soft-note">推荐每日任务</span></button><button class="btn ghost" data-action="startSize" data-size="15">🔥 挑战 15 词<br><span class="soft-note">状态好再冲</span></button></div><div class="quick-grid"><button class="btn ghost" data-action="openSpiritDexCaptured">已收服精灵图鉴</button><a class="btn ghost" href="#storyCard">📖 故事背景</a><button class="btn ghost" data-action="openSelector">自主选择单词</button><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="missed" data-action="startMode">Boss 词复活</button></div><div class="guardian-card"><h3>🎁 星星奖励目标</h3><p>星星不是为了诱惑孩子无限学，而是把每天 5～10 分钟的努力变成看得见的进度。</p>${rewardGoalsHtml()}</div></div></div>`;$('startMain').addEventListener('click',startSession);}
+
+  /* v41 ADHD友好星愿剧情系统：短、快、可跳过、存入故事书 */
+  function ensureStoryState(){
+    if(!state.story) state.story={};
+    if(!state.story.seen) state.story.seen={};
+    if(!Array.isArray(state.story.unlocked)) state.story.unlocked=[];
+    if(!state.story.wordBossShown) state.story.wordBossShown={};
+    if(!state.story.wordBossDefeated) state.story.wordBossDefeated={};
+    if(typeof state.story.bossDefeats!=="number") state.story.bossDefeats=0;
+    if(typeof state.story.correctBaseline!=="number") state.story.correctBaseline=totalCorrectCountRaw();
+    return state.story;
+  }
+  function totalCorrectCountRaw(){try{return Object.values(state.history||{}).reduce((sum,h)=>sum+(Number(h&&h.correct)||0),0)}catch(e){return 0}}
+  function totalWrongCountRaw(){try{return Object.values(state.history||{}).reduce((sum,h)=>sum+(Number(h&&h.wrong)||0),0)}catch(e){return 0}}
+  function storyCorrectProgress(){const st=ensureStoryState();return Math.max(0,totalCorrectCountRaw()-(Number(st.correctBaseline)||0));}
+  function storyTemplate(id,extra={}){
+    const name=escapeHtml(playerName());
+    const en=extra.word?escapeHtml(extra.word.en||""):"";
+    const zh=extra.word?escapeHtml(extra.word.zh||""):"";
+    const templates={
+      "introShort":{kicker:"🌟 星愿任务",title:"星愿任务开启",body:[`很久以前，星愿君主 Astraelis 创造了39只精灵，让它们守护1013个星愿单词。`,`学习守护犬旺财曾经负责保护这些单词。可是一次黑暗袭击后，旺财失去了记忆，还变成了喜欢捣乱的小恶魔。`,`现在，星愿宝珠选中了 <b>${name}</b>。每拼对一个单词，你就能唤醒一只精灵；每击败一个 Boss 词，旺财就能想起一点点过去。`,`<span class="quote">请帮助旺财找回记忆，让他回家。</span>`]},
+      "correct5":{kicker:"🌟 星愿碎片",title:"星愿宝珠亮了",body:[`你刚刚拼对了5个单词。星愿宝珠轻轻发光，像是在说：`,`<span class="quote">“我看见你的努力了。”</span>`,`远处的旺财耳朵动了一下。他小声说：“这个声音……好像有点熟。”`]},
+      "correct10":{kicker:"🧚 精灵回应",title:"第一阵星光",body:[`第10个单词拼对时，图鉴里传来轻轻的翻页声。`,`一只小精灵从书页后探出头：`,`<span class="quote">“继续拼吧，旺财离回家又近了一点。”</span>`]},
+      "correct20":{kicker:"🐶 旺财视角",title:"旺财的困惑",body:[`旺财本来想出来捣乱。可是他看到你还在认真拼单词，忽然停住了。`,`“奇怪……”旺财挠了挠头。`,`<span class="quote">“为什么我看到你拼对，会有点开心？”</span>`]},
+      "correct30":{kicker:"✨ 记忆碎片",title:"第一块记忆碎片",body:[`你已经拼对30个单词。`,`旺财的爪子不受控制地在地上划了一下：<b>F</b>`,`他低头看着那个字母，眼神突然变得很安静。`,`<span class="quote">“我以前……是不是教过这个？”</span>`]},
+      "correct50":{kicker:"📗 主线剧情",title:"认知之海的初遇",body:[`当第50个星愿单词被点亮，认知之海泛起一圈金色涟漪。`,`一只小精灵在图鉴里轻轻敲了敲门，像是在确认：你真的来了。`,`旺财尾巴上的混沌碎片，悄悄裂开了一道细细的缝。`]},
+      "correct100":{kicker:"📗 主线剧情",title:"图鉴开始热闹了",body:[`越来越多精灵从沉睡中醒来。它们没有催你快点，只是探出头陪着你。`,`旺财站在远处看着这些星光，忽然觉得心里有点烦躁，又有点熟悉。`,`他嘟囔着：“这些光……我以前是不是见过？”`]},
+      "correct150":{kicker:"👾 BOSS预告",title:"记忆之扉·第一重",body:[`第150个单词点亮时，混沌雾气在屏幕边缘翻涌。`,`旺财突然挡在一个被紫雾包住的单词前，声音有点发抖：`,`<span class="quote">“别碰那个词……它让我头疼。”</span>`,`你看见他身后有一扇门，门上写着：记忆之扉·第一重。`]},
+      "correct200":{kicker:"📘 主线剧情",title:"星光的涟漪",body:[`稀有精灵的页面被打开了。深蓝色星光像水波一样流过图鉴。`,`旺财在睡梦里轻轻摇了摇尾巴，嘴里小声念着：star、night、sky。`,`这是他失忆以来，第一次在梦里笑。`]},
+      "correct300":{kicker:"📘 主线剧情",title:"family 的花瓣",body:[`樱色花瓣从图鉴中飘出，每一片都藏着一个旧画面。`,`旺财曾经教一个孩子拼 <b>family</b>。那个孩子拼对后，跑回家抱住了爸爸妈妈。`,`旺财捂着胸口，小声问：“我以前……到底是做什么的？”`]},
+      "correct500":{kicker:"📙 主线剧情",title:"他不是坏狗",body:[`一段重要记忆醒来了：旺财第一次变成捣蛋鬼时，其实只是很害怕。`,`他用捣乱的方式留在孩子身边，因为他隐约记得——自己曾经也是陪在孩子身边的。`,`旺财终于明白：他不是因为坏才捣蛋。他只是想回来。`]},
+      "correct700":{kicker:"📗 最终篇",title:"最终之门出现",body:[`六年级的单词迷宫亮起最深处的星光。`,`旺财已经不再像以前那样只会捣乱。他站在最终之门前，看着门上的三枚暗色星星。`,`门后，藏着他的最后三块记忆碎片。`]},
+      "correct800":{kicker:"📗 最终篇",title:"39只精灵星阵",body:[`39只精灵同时从图鉴中飞出，排成一个发光的星阵。`,`Astraelis 的投影在星阵中央慢慢成形。`,`她看向旺财，轻声说：“最后的路，需要你们一起走完。”`]},
+      "correct1013":{kicker:"🏆 最终结局",title:"1013个单词归位",body:[`最后一个星愿单词被点亮。1013束微光汇成一条星河。`,`旺财终于想起自己是谁：学习守护犬，Stellar·旺财。`,`他回头看着你，尾巴摇得像星光风车：`,`<span class="quote">“谢谢你没有放弃我。也谢谢你没有放弃自己。”</span>`]},
+      "combo3":{kicker:"🔥 星愿连击",title:"连续拼对3个",body:[`连续拼对3个！三颗小星星围着你的名字转了一圈。`,`精灵们一起喊：`,`<span class="quote">“稳住！你正在变强！”</span>`]},
+      "combo5":{kicker:"⚡ 精灵加油团",title:"连续拼对5个",body:[`连续拼对5个！几只精灵从图鉴里探出头。`,`它们没有催你快点，只是轻轻说：`,`<span class="quote">“慢慢来，拼准比拼快更厉害。”</span>`]},
+      "wrong3":{kicker:"💨 旺财捣乱事件",title:"混沌雾气冒出来了",body:[`旺财从角落里跳出来，准备把字母吹乱。`,`可是他看到你还没有放弃，动作突然慢了一点。`,`<span class="quote">“哼……你还挺能坚持。”</span>`]},
+      "bossAppear":{kicker:"👾 BOSS词出现",title:"这个词有点硬",body:[`单词 <b>${en}</b>${zh?`（${zh}）`:""} 被混沌雾气包住了。`,`它不是你学不会，它只是暂时变成了一个 Boss 词。`,`旺财在旁边喊：`,`<span class="quote">“这个词有点硬！下次我们一起打它！”</span>`]},
+      "bossDefeat1":{kicker:"✨ BOSS词被击败",title:"旺财想起了一点点",body:[`混沌雾气散开了。旺财的头忽然疼了一下。`,`他看见很久以前的自己，正在用爪子写下一个单词。`,`旺财小声说：`,`<span class="quote">“我……以前好像不是来捣乱的。”</span>`]},
+      "bossDefeat3":{kicker:"✨ 记忆之门",title:"旺财开始帮忙",body:[`第三个 Boss 词被打败后，旺财没有马上逃走。`,`他站到你旁边，小声提醒：`,`<span class="quote">“刚才那个字母，好像应该在后面一点。我们再试试。”</span>`]},
+      "bossDefeat6":{kicker:"🌟 守护犬回归",title:"金色围巾亮起来",body:[`第六块混沌碎片裂开时，旺财脖子上的围巾亮起了金色星点。`,`他看着自己的爪子，终于说出一句完整的话：`,`<span class="quote">“我想起来了。我以前，是陪孩子学习的。”</span>`]},
+      "bossDefeat10":{kicker:"🏆 关键记忆",title:"旺财的真名",body:[`第十个 Boss 词被击败，混沌雾气彻底散开。`,`旺财抬起头，眼睛重新变成温暖的琥珀金。`,`他轻轻说：`,`<span class="quote">“我是 Stellar·旺财。我的任务，是守护每一个还愿意继续学的孩子。”</span>`]}
+    };
+    return templates[id]||null;
+  }
+  function storyBodyHtml(card){return (card.body||[]).map(x=>`<p>${x}</p>`).join("");}
+  function unlockStory(card,store=true){
+    if(!card||!card.title)return null;
+    const st=ensureStoryState();
+    if(store){
+      const exists=st.unlocked.some(x=>x.id===card.id);
+      if(!exists)st.unlocked.push({id:card.id,title:card.title,kicker:card.kicker,at:new Date().toISOString()});
+    }
+    return card;
+  }
+  function storyAlreadySeen(id){const st=ensureStoryState();return !!st.seen[id];}
+  function markStorySeen(id){const st=ensureStoryState();st.seen[id]=true;saveState();}
+  function storyForCorrectMilestone(){
+    const p=storyCorrectProgress();
+    const marks=[5,10,20,30,50,100,150,200,300,500,700,800,1013];
+    for(const n of marks){
+      const id="correct"+n;
+      if(p>=n&&!storyAlreadySeen(id)) return unlockStory({...storyTemplate(id),id});
+    }
+    return null;
+  }
+  function ensurePendingStories(){if(!Array.isArray(session.pendingStories))session.pendingStories=[];return session.pendingStories;}
+  function queueStory(card){if(!card)return;ensurePendingStories().push(card);saveState();saveSessionSnapshot();}
+  function maybeAfterCorrectStory(word,t,p){
+    const st=ensureStoryState();
+    let card=null;
+    if(p&&(p.spellWrong||0)>=2&&!st.wordBossDefeated[String(word.id)]){
+      st.wordBossDefeated[String(word.id)]=true;
+      st.bossDefeats=(st.bossDefeats||0)+1;
+      const n=st.bossDefeats;
+      if(n===1)card={...storyTemplate("bossDefeat1",{word}),id:"bossDefeat1"};
+      else if(n===3)card={...storyTemplate("bossDefeat3",{word}),id:"bossDefeat3"};
+      else if(n===6)card={...storyTemplate("bossDefeat6",{word}),id:"bossDefeat6"};
+      else if(n===10)card={...storyTemplate("bossDefeat10",{word}),id:"bossDefeat10"};
+      if(card)card=unlockStory(card);
+    }
+    if(!card) card=storyForCorrectMilestone();
+    if(!card&&session.combo>=5&&!session.comboStory5Shown){session.comboStory5Shown=true;card={...storyTemplate("combo5"),id:"combo5_"+todayStr()+"_"+Date.now()};}
+    if(!card&&session.combo>=3&&!session.comboStory3Shown){session.comboStory3Shown=true;card={...storyTemplate("combo3"),id:"combo3_"+todayStr()+"_"+Date.now()};}
+    if(card) queueStory(card);
+  }
+  function maybeAfterWrongStory(word,t,p){
+    ensureStoryState();
+    let card=null;
+    if(session.wrong>=3&&!session.storyWrong3Shown){session.storyWrong3Shown=true;card={...storyTemplate("wrong3",{word}),id:"wrong3_"+todayStr()+"_"+Date.now()};}
+    const key=String(word&&word.id||"");
+    if(word&&p&&(p.spellWrong||0)>=2&&!state.story.wordBossShown[key]){
+      state.story.wordBossShown[key]=true;
+      card={...storyTemplate("bossAppear",{word}),id:"bossAppear_"+key};
+    }
+    if(card){
+      unlockStory(card,false);
+      setTimeout(()=>{try{showStoryCardOverlay(card,()=>{},"close")}catch(e){}},650);
+      saveState();
+    }
+  }
+  function clearStoryOverlay(){document.querySelectorAll(".story-pop").forEach(n=>n.remove());}
+  function showStoryCardOverlay(card,onContinue,mode="next"){
+    if(!card||!els.studyCard||state.settings.quietMode){if(typeof onContinue==="function")onContinue();return;}
+    clearStoryOverlay();
+    const div=document.createElement("div");
+    div.className="praise-pop story-pop";
+    div.setAttribute("role","dialog");
+    div.setAttribute("aria-label","星愿剧情");
+    const primary=mode==="next"?"继续训练":"再试一次";
+    div.innerHTML=`<div class="story-mini-kicker">${escapeHtml(card.kicker||"📖 星愿剧情")}</div><div class="story-mini-title">${escapeHtml(personalize(card.title||"星愿剧情"))}</div><div class="story-mini-body">${storyBodyHtml(card)}</div><div class="story-actions-row"><button class="btn primary" data-story-action="continue">${primary}</button><button class="btn ghost" data-story-action="skip">以后再看</button></div><div class="story-save-tip">已存入“星愿故事书”。剧情很短，想继续拼写可以直接跳过。</div>`;
+    const finish=()=>{clearStoryOverlay();if(card.id)markStorySeen(card.id);if(typeof onContinue==="function")onContinue();};
+    div.addEventListener("click",e=>{const b=e.target.closest("[data-story-action]");if(!b)return;e.preventDefault();e.stopPropagation();finish();});
+    els.studyCard.appendChild(div);
+  }
+  function runPendingStoryThenNext(){
+    const list=ensurePendingStories();
+    if(list.length){const card=list.shift();saveSessionSnapshot();showStoryCardOverlay(card,()=>runPendingStoryThenNext(),"next");return;}
+    nextTask();
+  }
+  function renderStoryBook(){
+    updateProgressBar();
+    const st=ensureStoryState();
+    const unlocked=st.unlocked||[];
+    const prog=storyCorrectProgress();
+    const boss=st.bossDefeats||0;
+    const wrong=totalWrongCountRaw();
+    const listHtml=unlocked.length?unlocked.slice().reverse().map(item=>{const card=storyTemplate(item.id)||item;return `<div class="story-book-item"><h3>${escapeHtml(card.kicker||"📖")} ${escapeHtml(card.title||item.title||"星愿剧情")}</h3><div class="meta">已解锁 · ${escapeHtml((item.at||"").slice(0,10)||"今天")}</div><div>${storyBodyHtml(card)}</div></div>`}).join(""):`<div class="story-book-item"><h3>📖 故事书还在等待第一道星光</h3><p>从现在开始，拼对5个单词，就会解锁第一张星愿剧情卡。</p><p>剧情不会强迫你读完，随时可以跳过，之后来这里慢慢看。</p></div>`;
+    els.cardContent.innerHTML=`<div class="center-screen"><div class="story-card"><span class="story-kicker">📚 星愿故事书</span><div class="story-title">已解锁的星愿剧情</div><div class="story-subtitle">短剧情会自动保存；孩子可以先继续训练，以后再看。</div><div class="story-progress-box"><div><b>${prog}</b>剧情进度词</div><div><b>${unlocked.length}</b>已解锁剧情</div><div><b>${boss}</b>Boss记忆</div><div><b>${wrong}</b>混沌波动</div></div><div class="story-actions" style="grid-template-columns:1fr 1fr"><button class="btn primary" data-action="startCurrentMode">🚀 继续今日训练</button><button class="btn ghost" data-action="selectorBack">返回首页</button></div><div class="story-book-list">${listHtml}</div></div></div>`;
+  }
+
+
+  function renderDone(allDone=false){clearPunishmentOverlay();session.active=false;session.pendingAdvance=false;clearSessionSnapshot();updateProgressBar();const attempts=session.correct+session.wrong;const accuracy=attempts?Math.round(session.correct/attempts*100):100;const practiced=session.practicedIds.size;const spelling=session.spellIds.size;const voice=session.voiceIds?session.voiceIds.size:0;const hint=session.hintIds.size;const reveal=session.revealedIds.size;let badgeText="";if(session.bestCombo>=5)badgeText+='<span class="badge purple">🔥 连对达人</span>';if(accuracy>=90&&attempts>=8)badgeText+='<span class="badge green">🎯 高正确率</span>';if(session.stars>=25)badgeText+='<span class="badge orange">⭐ 星星收集家</span>';const size=currentMissionSize();els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="badge-row" style="justify-content:center"><span class="badge green">今日地图完成</span><span class="badge orange">本轮 ${session.stars} 星</span><span class="badge purple">正确率 ${accuracy}%</span>${badgeText}</div><div class="start-title">${allDone?"当前范围已通关":"今日单词精灵闯关完成"}</div><p class="start-sub">本轮收服/练习 <b>${practiced}</b> 个词，其中拼写/防漏字 <b>${spelling}</b> 个、朗读检测 <b>${voice}</b> 个；用了提示 ${hint} 个，查看完整答案 ${reveal} 个。看过答案和拼错的词已经变成“Boss/待收服词”，后续会自动回来。</p>${renderQuestMap(size,size)}<div class="chest-card"><b>${chestRewardText()}</b><br>今天不是没完没了地学，而是完成一小段地图，带着“我做到了”的感觉结束。</div>${renderSpiritReportBlock()}<div class="guardian-card"><h3>👨‍👩‍👧 家长夸奖卡</h3><p>今天请家长照着说一句，真实夸具体行为，不只说“真棒”。</p><div class="parent-script">“${parentPraiseForSession()}”</div></div><div class="selector-actions three"><button class="btn primary start-btn" id="moreNewBtn">学习更多的新单词</button><button class="btn good start-btn" id="againBtn">再来一轮拼写</button><button class="btn ghost start-btn" data-set-mode="missed" data-action="startMode">挑战 Boss 词</button></div><div class="quick-grid"><button class="btn ghost" data-set-mode="spelling" data-action="startMode">继续拼写专项</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="voice" data-action="startMode">朗读检测</button></div></div></div>`;$('againBtn').addEventListener('click',startSession);$('moreNewBtn').addEventListener('click',startMoreNewWords);renderReviewList();updateStats();maybeConfetti(32);}
+  function renderStart(){updateProgressBar();updateCustomWordsNote();const chosen=selectedWords();const customActive=state.settings.useCustomWords&&customSelectedWords().length>0;const due=countDue(chosen);const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const size=currentMissionSize();const streak=computeStreak();const todayDone=todayDoneCount();const weekWords=weeklyWordCount();const isVoice=state.settings.mode==="voice";const isMissing=state.settings.mode==="missing";const isZh=state.settings.mode==="zhSpell";let intro;if(customActive)intro=`已启用自主选词：本轮只从你勾选的 <b>${chosen.length}</b> 个单词里出题。今天不是“背单词”，是把这些词一个个收服。`;else if(isVoice)intro=`今天是朗读关：出现英文后读出来。读错不惩罚，听考试美式发音后再试。`;else if(isMissing)intro=`今天是防漏字关：专抓漏字、乱序和 b/d/p/q 这类方向难点。每发现一个漏洞，都是升级。`;else if(isZh)intro=`今天是核心关：看汉语，用语音逐字母拼英文。规则很简单：拼对才捕捉精灵；拼错旺财会捣乱，但这个词会变成 Boss，等你重新收服。`;else intro=`今天会优先安排：待复习 <b>${due}</b> 个、Boss 词 <b>${weak}</b> 个、待收服词 <b>${noSpell}</b> 个。`;els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="streak-row"><span class="streak-pill"><span class="flame">🔥</span>习惯火苗 ${streak} 天</span><span class="streak-pill">🛟 本周复活卡 1 张</span><span class="streak-pill">📅 本周收服 ${weekWords} 词</span></div><div class="badge-row" style="justify-content:center"><span class="badge">${customActive?"自选词":escapeHtml(rangeLabel())}</span><span class="badge green">${chosen.length} 个词</span><span class="badge purple">${modeName(state.settings.mode)}</span><span class="no-spell-badge">Boss/待收服 ${noSpell}</span></div><div class="mission-title">今日任务：收服 ${size} 个单词精灵</div><p class="start-sub">${intro}</p>${renderSpiritCampStrip()}${renderQuestMap(todayDone%Math.max(1,size),size)}<div class="game-banner"><b>星愿任务：</b>1013个星愿单词散落人间，拼对一个词，才会唤醒或升级一只单词精灵；拼错时被混沌影响的旺财会出来捣乱，这个词会变成 Boss 词，等你下次打败它。完成后就结束，不搞无限刷。</div><button class="btn primary start-btn" id="startMain">🚀 开始今日挑战</button><div class="game-mini"><button class="btn ghost" data-action="startSize" data-size="5">🌱 轻松 5 词<br><span class="soft-note">状态一般也算完成</span></button><button class="btn ghost" data-action="startSize" data-size="10">🎯 正常 10 词<br><span class="soft-note">推荐每日任务</span></button><button class="btn ghost" data-action="startSize" data-size="15">🔥 挑战 15 词<br><span class="soft-note">状态好再冲</span></button></div><div class="quick-grid"><button class="btn ghost" data-action="openSpiritDexCaptured">已收服精灵图鉴</button><button class="btn ghost" data-action="openSelector">自主选择单词</button><button class="btn ghost" data-set-mode="spelling" data-action="startMode">拼写专项</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="missed" data-action="startMode">Boss 词复活</button><button class="btn ghost" data-action="openStory">📖 星愿犬故事</button><button class="btn ghost" data-action="openStoryBook">📚 星愿故事书</button></div><div class="guardian-card"><h3>🎁 星星奖励目标</h3><p>星星不是为了诱惑孩子无限学，而是把每天 5～10 分钟的努力变成看得见的进度。</p>${rewardGoalsHtml()}</div></div></div>`;$('startMain').addEventListener('click',startSession);}
+  function renderStoryIntro(){
+    updateProgressBar();
+    const name=escapeHtml(playerName());
+    els.cardContent.innerHTML=`<div class="center-screen"><div class="story-card"><span class="story-kicker">📖 世界观 · 序幕</span><div class="story-title">星愿犬与失落的1013个单词</div><div class="story-subtitle">星愿君主的陨落与守护者的誓言</div><div class="story-rule-strip"><div><b>1013</b>星愿单词散落人间</div><div><b>39</b>单词精灵沉睡在迷宫深处</div><div><b>${name}</b>被星愿宝珠选中的训练师</div></div><div class="story-scroll"><p>在宇宙诞生之初，第一缕愿望之光凝聚成了一位神圣的存在——<b>星愿君主 Astraelis</b>。她创造了无数精灵，散布在“认知之海”的各个角落，用以守护世间一切知识的火花。</p><p>而在所有的知识中，Astraelis 最珍视的，是能够连接心灵与心灵的力量——<b>语言</b>。</p><p>为了让人类的孩子们能够跨越隔阂、彼此理解，Astraelis 派遣了自己最忠诚的伙伴——<b>学习守护犬·旺财</b>——带着 1013 个蕴含语言魔力的“星愿单词”降临人间。旺财的任务，是陪伴每一个学习英语的孩子，在他们拼对单词时，将对应的精灵召唤到他们身边，让学习变成一场充满惊喜的冒险。</p><p>然而，虚无语界的黑暗力量却对此感到恐惧。它们惧怕人类因语言相通而变得强大，于是趁旺财穿越认知之海时发动了突袭。</p><p>那一战，旺财为了保护怀中的 1013 个单词种子，用身体挡下了黑暗之王——<b>涵老魔</b>——的致命一击。单词种子散落人间，而旺财被“混沌碎片”击中头部，永远失去了关于自己使命的全部记忆。</p><p>忘记了自己是谁，忘记了自己为何而来，甚至忘记了星空之上那位温柔注视着他的君主。被混沌侵蚀的旺财，只剩下一种本能——<b>破坏语言秩序</b>。他变成了一个调皮捣蛋、专门干扰学习的小恶魔。每当有孩子拼错单词，他就会出现在他们身边，用尽各种办法捣蛋：打翻墨水瓶、放出吵闹的噪音、用幻影遮住单词本……仿佛拼错的单词是他快乐的源泉。</p><p>而散落人间的 1013 个单词种子，化为了 <b>39 个精灵</b>，沉睡在“单词迷宫”的深处。只有最纯净的学习愿望——也就是孩子们拼读单词的声音——才能唤醒它们，将它们带回现实世界。</p><p>Astraelis 俯瞰着这一切，在星光中流下一滴眼泪。那颗眼泪化作一颗星愿宝珠，坠入人间，选中了一位最平凡却又最特别的……<b>${name}</b>。</p><p class="story-quote">“孩子，请帮助旺财找回他的记忆。用你拼对的每一个单词，召唤我的精灵；用你每一次的坚持，驱散混沌的迷雾。让旺财记起他是谁，让他回家。”</p></div><div class="story-actions"><button class="btn primary start-btn" data-action="startCurrentMode">🚀 接受星愿任务</button><button class="btn good" data-action="openSpiritDexCaptured">🧚 查看已收服精灵</button><button class="btn ghost" data-action="selectorBack">返回首页</button></div></div></div>`;
+  }
   function countDue(words){const today=todayStr();return words.filter(w=>{const p=existingProgress(w.id);return p&&(!p.due||p.due<=today)}).length;}
   function countWeak(words){return words.filter(w=>{const p=existingProgress(w.id);return p&&((p.spellWrong||p.wrong||0)>0 || (p.reveals||0)>0 || (p.noSpell||0)>0 || (p.missingWrong||0)>0 || (p.spellStage||0)<3)}).length;}
   function updateStats(){updateCustomWordsNote();const chosen=selectedWords();const spellingReady=chosen.filter(w=>(existingProgress(w.id)?.spellStage||0)>=5).length;const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const missingWrong=chosen.reduce((sum,w)=>sum+(existingProgress(w.id)?.missingWrong||0),0);const streak=computeStreak();const weekWords=weeklyWordCount();const sp=spiritStats();els.statsBox.innerHTML=`<div class="stat"><b>${chosen.length}</b><small>当前地图词数</small></div><div class="stat"><b>${noSpell}</b><small>Boss/待收服词</small></div><div class="stat"><b>${weak}</b><small>需要加强</small></div><div class="stat"><b>${missingWrong}</b><small>漏字练错次数</small></div><div class="stat"><b>${spellingReady}</b><small>已收服较稳</small></div><div class="stat"><b>${state.totalStars||0}</b><small>星星总数</small></div><div class="stat"><b>${streak}</b><small>习惯火苗天数</small></div><div class="stat"><b>${weekWords}</b><small>本周收服词</small></div><div class="stat"><b>${sp.capturedWords}</b><small>精灵图鉴单词</small></div><div class="stat"><b>${sp.species}</b><small>已发现精灵种类</small></div>`;renderTodaySummary();}
@@ -1390,7 +1623,7 @@ a.pill,a.btn{text-decoration:none}.story-pill{display:inline-flex;align-items:ce
       renderModeTabs();
       showToastOnCard(`已切换为：${modeName(state.settings.mode)}。下次打开也会记住这个模式。`);
     });
-    document.addEventListener("click",e=>{const btn=e.target.closest("[data-action]");if(!btn)return;if(btn.dataset.setMode){state.settings.mode=btn.dataset.setMode;applySettingsFromUI();renderStart();if(btn.dataset.action==="startMode")startSession();return}const action=btn.dataset.action;if(!action)return;if(action==="startCurrentMode"){applySettingsFromUI();renderModeTabs();startSession();return}if(action==="changePlayerName")renderNameSetup(true);if(action==="openSelector")renderWordSelector();if(action==="openSpiritDex")renderSpiritDex(true);if(action==="openSpiritImage")openSpiritImage(btn.dataset.spriteId);if(action==="closeSpiritImage")closeSpiritImage();if(action==="openSpiritDexCaptured")renderSpiritDex(false);if(action==="openSpiritDexAll")renderSpiritDex(true);if(action==="selectorSearchClear")renderWordSelector("");if(action==="selectorSelectVisible")changeVisibleSelection(true);if(action==="selectorClearVisible")changeVisibleSelection(false);if(action==="selectorSelectWeak")selectWeakWords();if(action==="selectorSelectScope"){setCustomSelection(selectorScopeWords().map(w=>w.id),true);renderWordSelector($("selectorSearch")?.value||"");}if(action==="selectorClearAll"){clearCustomSelection();renderWordSelector($("selectorSearch")?.value||"");}if(action==="selectorDisable"){state.settings.useCustomWords=false;saveState();updateCustomWordsNote();renderWordSelector($("selectorSearch")?.value||"");}if(action==="selectorBack")renderStart();if(action==="selectorSaveOnly"){setCustomSelection(currentSelectorIds(),false);showToastOnCard("自选词已保存；需要时可打开选词表启用。") }if(action==="selectorUseStart"){setCustomSelection(currentSelectorIds(),true);state.settings.mode=state.settings.mode||"spelling";startSession();}if(action==="speak"&&session.current)speak(session.current.word);if(action==="startVoice")startVoiceCheck();if(action==="startVoiceSpell")startVoiceSpell();if(action==="startVoiceSpellFull")startVoiceSpellFull();if(action==="undoVoiceLetter")undoVoiceLetter();if(action==="clearVoiceLetters")clearVoiceLetters();if(action==="finishVoiceLetters")finishVoiceLetters();if(action==="manualVoiceLetter")manualVoiceLetter(btn.dataset.letter);if(action==="slowSpeak")slowSpeak();if(action==="checkSpell")checkSpelling();if(action==="checkMissing")checkMissing();if(action==="hint")showHint();if(action==="reveal")revealAnswer();if(action==="tryAgain")tryAgain();if(action==="skip")skipWord();if(action==="readDone")readDone();if(action==="speakWord"){const w=byId(btn.dataset.wordId);if(w)speak(w);} });
+    document.addEventListener("click",e=>{const btn=e.target.closest("[data-action]");if(!btn)return;if(btn.dataset.setMode){state.settings.mode=btn.dataset.setMode;applySettingsFromUI();renderStart();if(btn.dataset.action==="startMode")startSession();return}const action=btn.dataset.action;if(!action)return;if(action==="openStory"){renderStoryIntro();return}if(action==="openStoryBook"){renderStoryBook();return}if(action==="startCurrentMode"){applySettingsFromUI();renderModeTabs();startSession();return}if(action==="changePlayerName")renderNameSetup(true);if(action==="openSelector")renderWordSelector();if(action==="openSpiritDex")renderSpiritDex(true);if(action==="openSpiritImage")openSpiritImage(btn.dataset.spriteId);if(action==="closeSpiritImage")closeSpiritImage();if(action==="openSpiritDexCaptured")renderSpiritDex(false);if(action==="openSpiritDexAll")renderSpiritDex(true);if(action==="selectorSearchClear")renderWordSelector("");if(action==="selectorSelectVisible")changeVisibleSelection(true);if(action==="selectorClearVisible")changeVisibleSelection(false);if(action==="selectorSelectWeak")selectWeakWords();if(action==="selectorSelectScope"){setCustomSelection(selectorScopeWords().map(w=>w.id),true);renderWordSelector($("selectorSearch")?.value||"");}if(action==="selectorClearAll"){clearCustomSelection();renderWordSelector($("selectorSearch")?.value||"");}if(action==="selectorDisable"){state.settings.useCustomWords=false;saveState();updateCustomWordsNote();renderWordSelector($("selectorSearch")?.value||"");}if(action==="selectorBack")renderStart();if(action==="selectorSaveOnly"){setCustomSelection(currentSelectorIds(),false);showToastOnCard("自选词已保存；需要时可打开选词表启用。") }if(action==="selectorUseStart"){setCustomSelection(currentSelectorIds(),true);state.settings.mode=state.settings.mode||"spelling";startSession();}if(action==="speak"&&session.current)speak(session.current.word);if(action==="startVoice")startVoiceCheck();if(action==="startVoiceSpell")startVoiceSpell();if(action==="startVoiceSpellFull")startVoiceSpellFull();if(action==="undoVoiceLetter")undoVoiceLetter();if(action==="clearVoiceLetters")clearVoiceLetters();if(action==="finishVoiceLetters")finishVoiceLetters();if(action==="manualVoiceLetter")manualVoiceLetter(btn.dataset.letter);if(action==="slowSpeak")slowSpeak();if(action==="checkSpell")checkSpelling();if(action==="checkMissing")checkMissing();if(action==="hint")showHint();if(action==="reveal")revealAnswer();if(action==="tryAgain")tryAgain();if(action==="skip")skipWord();if(action==="readDone")readDone();if(action==="speakWord"){const w=byId(btn.dataset.wordId);if(w)speak(w);} });
     document.addEventListener("click",e=>{const choice=e.target.closest(".choice");if(choice)chooseAnswer(choice);});
     const floatingDex=$("floatingSpiritDexBtn");
     if(floatingDex){floatingDex.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();renderSpiritDex(false);});}
