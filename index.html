@@ -344,6 +344,34 @@
   margin-top:8px;
 }
 
+
+/* v40 旺财Boss战系统 */
+.boss-battle-card{
+  margin:12px auto 0;
+  max-width:560px;
+  padding:12px 14px;
+  border-radius:22px;
+  background:linear-gradient(135deg,#fff5f5,#fff8e8);
+  border:1px solid rgba(239,68,68,.25);
+  font-weight:900;
+  line-height:1.6;
+}
+.boss-hp-bar{
+  height:14px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#eee;
+  margin:8px 0;
+}
+.boss-hp-fill{
+  height:100%;
+  background:linear-gradient(90deg,#ef4444,#f97316);
+}
+.boss-action{
+  font-size:16px;
+  color:#b42318;
+}
+
 </style>
 </head>
 <body>
@@ -420,7 +448,7 @@
     studyCard:$("studyCard"), cardContent:$("cardContent"), barFill:$("barFill"), progressText:$("progressText"), summaryCard:$("summaryCard"), todaySummary:$("todaySummary"), reviewList:$("reviewList"), confetti:$("confetti"), spiritLightbox:$("spiritLightbox"), spiritLightboxImg:$("spiritLightboxImg"), spiritLightboxTitle:$("spiritLightboxTitle"), spiritLightboxMeta:$("spiritLightboxMeta"), spiritLightboxDesc:$("spiritLightboxDesc")
   };
   const clone = (obj)=>JSON.parse(JSON.stringify(obj));
-  const defaultState = {profile:{playerName:"",named:false},settings:{grade:"全部",group:"全部",unit:"全部",dailyNew:8,sessionSize:12,mode:"spelling",autoSpeak:true,allowReveal:true,quietMode:false,punishmentMode:true,useCustomWords:false,selectedWordIds:[]},progress:{},history:{},lastRunDate:null,totalStars:0,badges:{}};
+  const defaultState = {profile:{playerName:"",named:false},settings:{grade:"全部",group:"全部",unit:"全部",dailyNew:8,sessionSize:12,mode:"spelling",autoSpeak:true,allowReveal:true,quietMode:false,punishmentMode:true,useCustomWords:false,selectedWordIds:[]},progress:{},history:{},lastRunDate:null,totalStars:0,badges:{},boss:{level:1,hp:100,maxHp:100,wins:0}};
   let state = loadState();
   let session = blankSession();
 
@@ -1205,7 +1233,7 @@
     const zh=escapeHtml(t.word.zh||"");
     return `<div class="praise-word-focus"><span class="en">${en}</span><span class="zh">${zh}</span></div>`;
   }
-  function showPraiseOverlay(text,big=false){text=personalize(text);if(state.settings.quietMode||!els.studyCard||!text)return null;clearPraiseOverlay();const div=document.createElement("div");div.className="praise-pop"+(big?" big":"");div.setAttribute("role","button");div.setAttribute("aria-label","点击继续下一个单词");const nextTip="点一下继续下一个，或等 15 秒自动继续 ✨";const wordFocusHtml=renderPraiseWordFocus();const spiritHtml=renderSpiritEventCard(session.lastSpiritEvent);div.innerHTML=`<div class="emoji">${big?"🏆🎉⭐":"🌟✨"}</div><b>${escapeHtml(text)}</b>${wordFocusHtml}<div class="praise-audio-tip">🔊 iPad Safari自然朗读：单词 → 字母名称拼写 → 单词强化两遍 → 中文意思</div>${spiritHtml}<div class="tap-next">${nextTip}</div>`;div.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(window.__praiseContinue)window.__praiseContinue();});els.studyCard.appendChild(div);speakPraiseReview();return div;}
+  function showPraiseOverlay(text,big=false){text=personalize(text);if(state.settings.quietMode||!els.studyCard||!text)return null;clearPraiseOverlay();const div=document.createElement("div");div.className="praise-pop"+(big?" big":"");div.setAttribute("role","button");div.setAttribute("aria-label","点击继续下一个单词");const nextTip="点一下继续下一个，或等 15 秒自动继续 ✨";const wordFocusHtml=renderPraiseWordFocus();const spiritHtml=renderSpiritEventCard(session.lastSpiritEvent);div.innerHTML=`<div class="emoji">${big?"🏆🎉⭐":"🌟✨"}</div><b>${escapeHtml(text)}</b>${wordFocusHtml}${renderBossBattle()}<div class="praise-audio-tip">🔊 iPad Safari自然朗读：单词 → 字母名称拼写 → 单词强化两遍 → 中文意思</div>${spiritHtml}<div class="tap-next">${nextTip}</div>`;div.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(window.__praiseContinue)window.__praiseContinue();});els.studyCard.appendChild(div);speakPraiseReview();return div;}
   function scheduleNextAfterPraise(big=false){session.pendingAdvance=true;saveSessionSnapshot();let moved=false;const go=()=>{if(moved)return;moved=true;try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){}session.pendingAdvance=false;window.__praiseContinue=null;clearPraiseOverlay();nextTask();};window.__praiseContinue=go;praiseAdvanceTimer=setTimeout(go,15000);}
   function praiseAfterSpelling(t){const line=praiseLine(t);const milestone=maybeTenWordPraise();const text=milestone||line;showFeedback(text,"good");showPraiseOverlay(text,!!milestone);return !!milestone;}
   function recordVoiceSpellWrong(word,t,heard){const p=getProgress(word.id);p.voiceSpellWrong=(p.voiceSpellWrong||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.wrong=(p.wrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);t.voiceSpellWrongCount=(t.voiceSpellWrongCount||0)+1;recordHistory(false,word.id,"zhSpell",0,t);saveState();updateStats();}
@@ -1215,18 +1243,53 @@
     if(isSpellingCorrect(value,word.en)){
       session.locked=true;handleSpellingCorrect(word,t);session.done++;updateProgressBar();const big=praiseAfterSpelling(t);maybeConfetti(big?30:(t.fullReveal?5:t.hintLevel?8:14));scheduleNextAfterPraise(big);
     }else{
-      t.wasWrong=true;session.combo=0;showFeedback("差一点点，系统已经记录一次拼写错误；看清错在哪里，再遮住重拼。","bad");maybeWangcaiPunish(word);const reveal=$("answerReveal");if(reveal)reveal.classList.add("show");showDiff(value,word.en,t.mode);els.studyCard.classList.add("shake");if(input)input.select();markCannotSpell(word,t,"wrong");}
+      t.wasWrong=true;session.combo=0;showFeedback("差一点点，系统已经记录一次拼写错误；看清错在哪里，再遮住重拼。","bad");maybeWangcaiPunish(word);session.lastBossBattle=punishWangcaiHp(word);const reveal=$("answerReveal");if(reveal)reveal.classList.add("show");showDiff(value,word.en,t.mode);els.studyCard.classList.add("shake");if(input)input.select();markCannotSpell(word,t,"wrong");}
   }
   function checkMissing(){
     if(session.locked||!session.current)return;const input=$("spellInput");const value=input?input.value:"";const t=session.current;const {word}=t;t.attempts++;
     if(isMissingCorrect(value,word,t)){
       session.locked=true;const p=getProgress(word.id);p.missingCorrect=(p.missingCorrect||0)+1;state.progress[word.id]=p;handleSpellingCorrect(word,t);session.done++;updateProgressBar();const big=praiseAfterSpelling(t);maybeConfetti(big?30:(t.fullReveal?5:12));scheduleNextAfterPraise(big);
     }else{
-      t.wasWrong=true;session.combo=0;showFeedback("这个缺口还没抓住，系统已记录一次漏字练习错误。看完整单词后再补一次。","bad");maybeWangcaiPunish(word);const reveal=$("answerReveal");if(reveal)reveal.classList.add("show");showDiff(value,word.en,t.mode);els.studyCard.classList.add("shake");if(input)input.select();markCannotSpell(word,t,"missingWrong");}
+      t.wasWrong=true;session.combo=0;showFeedback("这个缺口还没抓住，系统已记录一次漏字练习错误。看完整单词后再补一次。","bad");maybeWangcaiPunish(word);session.lastBossBattle=punishWangcaiHp(word);const reveal=$("answerReveal");if(reveal)reveal.classList.add("show");showDiff(value,word.en,t.mode);els.studyCard.classList.add("shake");if(input)input.select();markCannotSpell(word,t,"missingWrong");}
   }
   function spellGoodMessage(t){if(t.fullReveal)return "看过答案后拼对了，也很棒！这个词明天还会再来。";if(t.hintLevel>0)return "提示后拼对了，继续积累信心！";return randomGood();}
+
+  function ensureBoss(){
+    if(!state.boss)state.boss={level:1,hp:100,maxHp:100,wins:0};
+    if(!state.boss.maxHp)state.boss.maxHp=100;
+    return state.boss;
+  }
+  function bossPercent(){const b=ensureBoss();return Math.max(0,Math.min(100,Math.round(b.hp/b.maxHp*100)));}
+  function attackWangcai(word,t){
+    const b=ensureBoss();
+    const damage=t&&t.fullReveal?5:(t&&t.hintLevel>0?8:15);
+    const before=b.hp;
+    b.hp=Math.max(0,b.hp-damage);
+    let msg=`你的精灵发动攻击！${word.en} 记忆光波造成 ${damage} 点伤害，旺财 HP ${b.hp}/${b.maxHp}`;
+    if(b.hp<=0){
+      b.wins=(b.wins||0)+1;
+      b.level=Math.min(10,(b.level||1)+1);
+      b.maxHp=100+b.level*50;
+      b.hp=b.maxHp;
+      msg=`🎉 旺财被击败！精灵合击成功，下一只旺财升级到 Lv.${b.level}`;
+    }
+    return {msg,damage,before,after:b.hp,level:b.level,percent:bossPercent()};
+  }
+  function punishWangcaiHp(word){
+    const b=ensureBoss();
+    const add=10;
+    b.hp=Math.min(b.maxHp,b.hp+add);
+    return {msg:`旺财吸收错误能量 +${add} HP，现在 ${b.hp}/${b.maxHp}`,add};
+  }
+  function renderBossBattle(){
+    const b=ensureBoss();
+    const p=bossPercent();
+    const event=session.lastBossBattle;
+    return `<div class="boss-battle-card"><div>🐶 旺财 Boss Lv.${b.level}</div><div class="boss-hp-bar"><div class="boss-hp-fill" style="width:${p}%"></div></div><div>❤️ HP ${b.hp}/${b.maxHp}</div>${event?`<div class="boss-action">${escapeHtml(event.msg)}</div>`:''}</div>`;
+  }
+
   function handleSpellingCorrect(word,t){
-    const p=getProgress(word.id);let gain=t.fullReveal?1:(t.hintLevel>0?2:3);p.spellCorrect=(p.spellCorrect||0)+1;p.correct=(p.correct||0)+1;p.lastSeen=todayStr();p.spellStage=Math.min(10,(p.spellStage||0)+(t.fullReveal?1:(t.hintLevel>0?1:2)));p.stage=Math.max(p.stage||0,Math.min(4,p.spellStage));p.due=addDays(todayStr(),t.fullReveal?1:intervalForSpellStage(p.spellStage));if(t.hintLevel>0)p.hints=(p.hints||0)+1;if(t.fullReveal&&!t.noSpellMarked)p.reveals=(p.reveals||0)+1;state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=gain;if(t.hintLevel>0)session.hintIds.add(word.id);if(t.fullReveal)session.revealedIds.add(word.id);session.practicedIds.add(word.id);session.spellIds.add(word.id);session.lastSpiritEvent=captureWordSpirit(word,t,p);recordHistory(true,word.id,t.mode||"spell",gain,t);awardBadges();saveState();updateStats();}
+    const p=getProgress(word.id);let gain=t.fullReveal?1:(t.hintLevel>0?2:3);p.spellCorrect=(p.spellCorrect||0)+1;p.correct=(p.correct||0)+1;p.lastSeen=todayStr();p.spellStage=Math.min(10,(p.spellStage||0)+(t.fullReveal?1:(t.hintLevel>0?1:2)));p.stage=Math.max(p.stage||0,Math.min(4,p.spellStage));p.due=addDays(todayStr(),t.fullReveal?1:intervalForSpellStage(p.spellStage));if(t.hintLevel>0)p.hints=(p.hints||0)+1;if(t.fullReveal&&!t.noSpellMarked)p.reveals=(p.reveals||0)+1;state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=gain;if(t.hintLevel>0)session.hintIds.add(word.id);if(t.fullReveal)session.revealedIds.add(word.id);session.practicedIds.add(word.id);session.spellIds.add(word.id);session.lastSpiritEvent=captureWordSpirit(word,t,p);session.lastBossBattle=attackWangcai(word,t);recordHistory(true,word.id,t.mode||"spell",gain,t);awardBadges();saveState();updateStats();}
   function handleWrong(word,mode,requeue=true){const p=getProgress(word.id);p.wrong=(p.wrong||0)+1;p.spellWrong=(p.spellWrong||0)+1;p.lastSeen=todayStr();p.due=todayStr();p.spellStage=Math.max(0,(p.spellStage||0)-1);state.progress[word.id]=p;session.wrong++;session.combo=0;session.practicedIds.add(word.id);recordHistory(false,word.id,mode,0,session.current);if(requeue&&session.done+session.queue.length<(Number(state.settings.sessionSize)||12)+4)insertLater(word,2);saveState();updateStats();}
   function handleGenericCorrect(word,mode){const p=getProgress(word.id);p.correct=(p.correct||0)+1;p.stage=Math.min((p.stage||0)+1,9);p.lastSeen=todayStr();p.due=addDays(todayStr(),Math.max(0,Math.min(3,p.stage-1)));state.progress[word.id]=p;session.correct++;session.combo++;session.bestCombo=Math.max(session.bestCombo,session.combo);session.stars+=1;session.practicedIds.add(word.id);if(mode==="read")session.readIds.add(word.id);if(mode==="enToZh"||mode==="zhToEn")session.meaningIds.add(word.id);recordHistory(true,word.id,mode,1,session.current);saveState();updateStats();}
   function insertLater(word,distance){const pos=Math.min(distance,session.queue.length);session.queue.splice(pos,0,word);}
@@ -1315,7 +1378,7 @@
   function chestRewardText(){const count=session.spellIds?.size||0;if(count>=10)return `🎁 大宝箱开启：你获得“十词通关徽章”、${session.stars||0} 颗星星，还有一次家长认真夸奖。`;if(count>=5)return `🧰 小宝箱开启：你完成了 ${count} 个拼写词，单词精灵队伍又扩大了。`;return `🌱 今天的任务完成了，习惯火苗继续亮着。`;}
 
   function renderDone(allDone=false){clearPunishmentOverlay();session.active=false;session.pendingAdvance=false;clearSessionSnapshot();updateProgressBar();const attempts=session.correct+session.wrong;const accuracy=attempts?Math.round(session.correct/attempts*100):100;const practiced=session.practicedIds.size;const spelling=session.spellIds.size;const voice=session.voiceIds?session.voiceIds.size:0;const hint=session.hintIds.size;const reveal=session.revealedIds.size;let badgeText="";if(session.bestCombo>=5)badgeText+='<span class="badge purple">🔥 连对达人</span>';if(accuracy>=90&&attempts>=8)badgeText+='<span class="badge green">🎯 高正确率</span>';if(session.stars>=25)badgeText+='<span class="badge orange">⭐ 星星收集家</span>';const size=currentMissionSize();els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="badge-row" style="justify-content:center"><span class="badge green">今日地图完成</span><span class="badge orange">本轮 ${session.stars} 星</span><span class="badge purple">正确率 ${accuracy}%</span>${badgeText}</div><div class="start-title">${allDone?"当前范围已通关":"今日单词精灵闯关完成"}</div><p class="start-sub">本轮收服/练习 <b>${practiced}</b> 个词，其中拼写/防漏字 <b>${spelling}</b> 个、朗读检测 <b>${voice}</b> 个；用了提示 ${hint} 个，查看完整答案 ${reveal} 个。看过答案和拼错的词已经变成“Boss/待收服词”，后续会自动回来。</p>${renderQuestMap(size,size)}<div class="chest-card"><b>${chestRewardText()}</b><br>今天不是没完没了地学，而是完成一小段地图，带着“我做到了”的感觉结束。</div>${renderSpiritReportBlock()}<div class="guardian-card"><h3>👨‍👩‍👧 家长夸奖卡</h3><p>今天请家长照着说一句，真实夸具体行为，不只说“真棒”。</p><div class="parent-script">“${parentPraiseForSession()}”</div></div><div class="selector-actions three"><button class="btn primary start-btn" id="moreNewBtn">学习更多的新单词</button><button class="btn good start-btn" id="againBtn">再来一轮拼写</button><button class="btn ghost start-btn" data-set-mode="missed" data-action="startMode">挑战 Boss 词</button></div><div class="quick-grid"><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">继续语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="voice" data-action="startMode">朗读检测</button></div></div></div>`;$('againBtn').addEventListener('click',startSession);$('moreNewBtn').addEventListener('click',startMoreNewWords);renderReviewList();updateStats();maybeConfetti(32);}
-  function renderStart(){updateProgressBar();updateCustomWordsNote();const chosen=selectedWords();const customActive=state.settings.useCustomWords&&customSelectedWords().length>0;const due=countDue(chosen);const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const size=currentMissionSize();const streak=computeStreak();const todayDone=todayDoneCount();const weekWords=weeklyWordCount();const isVoice=state.settings.mode==="voice";const isMissing=state.settings.mode==="missing";const isZh=state.settings.mode==="zhSpell";let intro;if(customActive)intro=`已启用自主选词：本轮只从你勾选的 <b>${chosen.length}</b> 个单词里出题。今天不是“背单词”，是把这些词一个个收服。`;else if(isVoice)intro=`今天是朗读关：出现英文后读出来。读错不惩罚，听考试美式发音后再试。`;else if(isMissing)intro=`今天是防漏字关：专抓漏字、乱序和 b/d/p/q 这类方向难点。每发现一个漏洞，都是升级。`;else if(isZh)intro=`今天是核心关：看汉语，用语音逐字母拼英文。规则很简单：拼对才捕捉精灵；拼错旺财会捣乱，但这个词会变成 Boss，等你重新收服。`;else intro=`今天会优先安排：待复习 <b>${due}</b> 个、Boss 词 <b>${weak}</b> 个、待收服词 <b>${noSpell}</b> 个。`;els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="streak-row"><span class="streak-pill"><span class="flame">🔥</span>习惯火苗 ${streak} 天</span><span class="streak-pill">🛟 本周复活卡 1 张</span><span class="streak-pill">📅 本周收服 ${weekWords} 词</span></div><div class="badge-row" style="justify-content:center"><span class="badge">${customActive?"自选词":escapeHtml(rangeLabel())}</span><span class="badge green">${chosen.length} 个词</span><span class="badge purple">${modeName(state.settings.mode)}</span><span class="no-spell-badge">Boss/待收服 ${noSpell}</span></div><div class="mission-title">今日任务：收服 ${size} 个单词精灵</div><p class="start-sub">${intro}</p>${renderSpiritCampStrip()}${renderQuestMap(todayDone%Math.max(1,size),size)}<div class="game-banner"><b>捕捉规则：</b>拼对一个词，才会捕捉或升级一只单词精灵；拼错时旺财会出来捣乱，这个词会变成 Boss 词，等你下次打败它。完成后就结束，不搞无限刷。</div><button class="btn primary start-btn" id="startMain">🚀 开始今日挑战</button><div class="game-mini"><button class="btn ghost" data-action="startSize" data-size="5">🌱 轻松 5 词<br><span class="soft-note">状态一般也算完成</span></button><button class="btn ghost" data-action="startSize" data-size="10">🎯 正常 10 词<br><span class="soft-note">推荐每日任务</span></button><button class="btn ghost" data-action="startSize" data-size="15">🔥 挑战 15 词<br><span class="soft-note">状态好再冲</span></button></div><div class="quick-grid"><button class="btn ghost" data-action="openSpiritDexCaptured">已收服精灵图鉴</button><button class="btn ghost" data-action="openSelector">自主选择单词</button><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="missed" data-action="startMode">Boss 词复活</button></div><div class="guardian-card"><h3>🎁 星星奖励目标</h3><p>星星不是为了诱惑孩子无限学，而是把每天 5～10 分钟的努力变成看得见的进度。</p>${rewardGoalsHtml()}</div></div></div>`;$('startMain').addEventListener('click',startSession);}
+  function renderStart(){updateProgressBar();updateCustomWordsNote();const chosen=selectedWords();const customActive=state.settings.useCustomWords&&customSelectedWords().length>0;const due=countDue(chosen);const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const size=currentMissionSize();const streak=computeStreak();const todayDone=todayDoneCount();const weekWords=weeklyWordCount();const isVoice=state.settings.mode==="voice";const isMissing=state.settings.mode==="missing";const isZh=state.settings.mode==="zhSpell";let intro;if(customActive)intro=`已启用自主选词：本轮只从你勾选的 <b>${chosen.length}</b> 个单词里出题。今天不是“背单词”，是把这些词一个个收服。`;else if(isVoice)intro=`今天是朗读关：出现英文后读出来。读错不惩罚，听考试美式发音后再试。`;else if(isMissing)intro=`今天是防漏字关：专抓漏字、乱序和 b/d/p/q 这类方向难点。每发现一个漏洞，都是升级。`;else if(isZh)intro=`今天是核心关：看汉语，用语音逐字母拼英文。规则很简单：拼对才捕捉精灵；拼错旺财会捣乱，但这个词会变成 Boss，等你重新收服。`;else intro=`今天会优先安排：待复习 <b>${due}</b> 个、Boss 词 <b>${weak}</b> 个、待收服词 <b>${noSpell}</b> 个。`;els.cardContent.innerHTML=`<div class="center-screen"><div class="start-box"><div class="streak-row"><span class="streak-pill"><span class="flame">🔥</span>习惯火苗 ${streak} 天</span><span class="streak-pill">🛟 本周复活卡 1 张</span><span class="streak-pill">📅 本周收服 ${weekWords} 词</span></div><div class="badge-row" style="justify-content:center"><span class="badge">${customActive?"自选词":escapeHtml(rangeLabel())}</span><span class="badge green">${chosen.length} 个词</span><span class="badge purple">${modeName(state.settings.mode)}</span><span class="no-spell-badge">Boss/待收服 ${noSpell}</span></div><div class="mission-title">今日任务：收服 ${size} 个单词精灵</div><p class="start-sub">${intro}</p>${renderSpiritCampStrip()}${renderQuestMap(todayDone%Math.max(1,size),size)}<div class="game-banner"><b>⚔️ 旺财Boss规则：</b>答对时你的精灵攻击旺财；答错时旺财吸收错误能量。<br><br><b>捕捉规则：</b>拼对一个词，才会捕捉或升级一只单词精灵；拼错时旺财会出来捣乱，这个词会变成 Boss 词，等你下次打败它。完成后就结束，不搞无限刷。</div><button class="btn primary start-btn" id="startMain">🚀 开始今日挑战</button><div class="game-mini"><button class="btn ghost" data-action="startSize" data-size="5">🌱 轻松 5 词<br><span class="soft-note">状态一般也算完成</span></button><button class="btn ghost" data-action="startSize" data-size="10">🎯 正常 10 词<br><span class="soft-note">推荐每日任务</span></button><button class="btn ghost" data-action="startSize" data-size="15">🔥 挑战 15 词<br><span class="soft-note">状态好再冲</span></button></div><div class="quick-grid"><button class="btn ghost" data-action="openSpiritDexCaptured">已收服精灵图鉴</button><button class="btn ghost" data-action="openSelector">自主选择单词</button><button class="btn ghost" data-set-mode="zhSpell" data-action="startMode">语音拼英文</button><button class="btn ghost" data-set-mode="missing" data-action="startMode">防漏字</button><button class="btn ghost" data-set-mode="missed" data-action="startMode">Boss 词复活</button></div><div class="guardian-card"><h3>🎁 星星奖励目标</h3><p>星星不是为了诱惑孩子无限学，而是把每天 5～10 分钟的努力变成看得见的进度。</p>${rewardGoalsHtml()}</div></div></div>`;$('startMain').addEventListener('click',startSession);}
   function countDue(words){const today=todayStr();return words.filter(w=>{const p=existingProgress(w.id);return p&&(!p.due||p.due<=today)}).length;}
   function countWeak(words){return words.filter(w=>{const p=existingProgress(w.id);return p&&((p.spellWrong||p.wrong||0)>0 || (p.reveals||0)>0 || (p.noSpell||0)>0 || (p.missingWrong||0)>0 || (p.spellStage||0)<3)}).length;}
   function updateStats(){updateCustomWordsNote();const chosen=selectedWords();const spellingReady=chosen.filter(w=>(existingProgress(w.id)?.spellStage||0)>=5).length;const weak=countWeak(chosen);const noSpell=chosen.filter(w=>{const p=existingProgress(w.id);return p&&((p.noSpell||0)>0||(p.spellWrong||0)>0)}).length;const missingWrong=chosen.reduce((sum,w)=>sum+(existingProgress(w.id)?.missingWrong||0),0);const streak=computeStreak();const weekWords=weeklyWordCount();const sp=spiritStats();els.statsBox.innerHTML=`<div class="stat"><b>${chosen.length}</b><small>当前地图词数</small></div><div class="stat"><b>${noSpell}</b><small>Boss/待收服词</small></div><div class="stat"><b>${weak}</b><small>需要加强</small></div><div class="stat"><b>${missingWrong}</b><small>漏字练错次数</small></div><div class="stat"><b>${spellingReady}</b><small>已收服较稳</small></div><div class="stat"><b>${state.totalStars||0}</b><small>星星总数</small></div><div class="stat"><b>${streak}</b><small>习惯火苗天数</small></div><div class="stat"><b>${weekWords}</b><small>本周收服词</small></div><div class="stat"><b>${sp.capturedWords}</b><small>精灵图鉴单词</small></div><div class="stat"><b>${sp.species}</b><small>已发现精灵种类</small></div>`;renderTodaySummary();}
